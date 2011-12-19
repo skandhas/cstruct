@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://gmpg.org/xfn/11" >
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>CStruct:Examples:File IO</title>
+	<style type="text/css">
+
+	.CodeRay {
+  background-color: #232323;
+  border: 1px solid black;
+  font-family: 'Courier New', 'Terminal', monospace;
+  color: #E6E0DB;
+  padding: 3px 5px;
+  overflow: auto;
+  font-size: 12px;
+  margin: 12px 0;
+}
+.CodeRay pre {
+  margin: 0px;
+  padding: 0px;
+}
+
+.CodeRay .an { color:#E7BE69 }                      
+.CodeRay .c  { color:#BC9358; font-style: italic; } 
+.CodeRay .ch { color:#509E4F }                   
+.CodeRay .cl { color:#FFF }                         
+.CodeRay .co { color:#FFF }    
+.CodeRay .fl { color:#A4C260 }                      
+.CodeRay .fu { color:#FFC56D }            
+.CodeRay .gv { color:#D0CFFE }                    
+.CodeRay .i  { color:#A4C260 }                      
+.CodeRay .il { background:#151515 }               
+.CodeRay .iv { color:#D0CFFE }                    
+.CodeRay .pp { color:#E7BE69 }                      
+.CodeRay .r  { color:#CB7832 }                      
+.CodeRay .rx { color:#A4C260 }                      
+.CodeRay .s  { color:#A4C260 }                      
+.CodeRay .sy { color:#6C9CBD }                      
+.CodeRay .ta { color:#E7BE69 }                      
+.CodeRay .pc { color:#6C9CBD }                      
+
+	</style>
+</head>
+<body>
+<div style="margin-left:auto;margin-right:auto;width:800px;">
+<div class="CodeRay">
+  <div class="code"><pre><span class="c"># CStruct Examples</span>
+require <span class="s"><span class="dl">'</span><span class="k">cstruct</span><span class="dl">'</span></span>
+
+<span class="c"># struct Point in Ruby: </span>
+<span class="r">class</span> <span class="cl">Point</span> &lt; <span class="co">CStruct</span>
+  int32<span class="sy">:x</span>
+  int32<span class="sy">:y</span> 
+<span class="r">end</span>
+
+<span class="c"># struct PointF in Ruby: </span>
+<span class="r">class</span> <span class="cl">PointF</span> &lt; <span class="co">CStruct</span>
+  double<span class="sy">:x</span>
+  double<span class="sy">:y</span> 
+<span class="r">end</span>
+
+<span class="c"># write file</span>
+<span class="co">File</span>.open(<span class="s"><span class="dl">&quot;</span><span class="k">point.bin</span><span class="dl">&quot;</span></span>,<span class="s"><span class="dl">&quot;</span><span class="k">wb</span><span class="dl">&quot;</span></span>)<span class="r">do</span> |f|
+    point   = <span class="co">Point</span>.new {|st| st.x = <span class="i">100</span>; st.y =<span class="i">200</span> }
+    point_f = <span class="co">PointF</span>.new{|st| st.x = <span class="fl">20.65</span>; st.y =<span class="fl">70.86</span> }
+
+    f.write point.data
+    f.write point_f.data
+<span class="r">end</span>
+
+<span class="c">#read file</span>
+<span class="co">File</span>.open(<span class="s"><span class="dl">&quot;</span><span class="k">point.bin</span><span class="dl">&quot;</span></span>,<span class="s"><span class="dl">&quot;</span><span class="k">rb</span><span class="dl">&quot;</span></span>)<span class="r">do</span> |f|
+    point   = <span class="co">Point</span>.new 
+    point_f = <span class="co">PointF</span>.new
+
+    point   &lt;&lt; f.read(<span class="co">Point</span>.size)
+    point_f &lt;&lt; f.read(<span class="co">PointF</span>.size)
+        
+    puts point.x
+    puts point.y
+    puts point_f.x
+    puts point_f.y
+<span class="r">end</span></pre></div>
+</div>
+
+</div>
+</body>

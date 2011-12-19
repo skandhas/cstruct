@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://gmpg.org/xfn/11" >
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>CStruct:Examples:GetSystemInfo</title>
+	<style type="text/css">
+
+	.CodeRay {
+  background-color: #232323;
+  border: 1px solid black;
+  font-family: 'Courier New', 'Terminal', monospace;
+  color: #E6E0DB;
+  padding: 3px 5px;
+  overflow: auto;
+  font-size: 12px;
+  margin: 12px 0;
+}
+.CodeRay pre {
+  margin: 0px;
+  padding: 0px;
+}
+
+.CodeRay .an { color:#E7BE69 }                      
+.CodeRay .c  { color:#BC9358; font-style: italic; } 
+.CodeRay .ch { color:#509E4F }                   
+.CodeRay .cl { color:#FFF }                         
+.CodeRay .co { color:#FFF }    
+.CodeRay .fl { color:#A4C260 }                      
+.CodeRay .fu { color:#FFC56D }            
+.CodeRay .gv { color:#D0CFFE }                    
+.CodeRay .i  { color:#A4C260 }                      
+.CodeRay .il { background:#151515 }               
+.CodeRay .iv { color:#D0CFFE }                    
+.CodeRay .pp { color:#E7BE69 }                      
+.CodeRay .r  { color:#CB7832 }                      
+.CodeRay .rx { color:#A4C260 }                      
+.CodeRay .s  { color:#A4C260 }                      
+.CodeRay .sy { color:#6C9CBD }                      
+.CodeRay .ta { color:#E7BE69 }                      
+.CodeRay .pc { color:#6C9CBD }                      
+
+	</style>
+</head>
+<body>
+<div style="margin-left:auto;margin-right:auto;width:800px;">
+<div class="CodeRay">
+  <div class="code"><pre><span class="c"># CStruct Examples</span>
+require <span class="s"><span class="dl">'</span><span class="k">windows/system_info</span><span class="dl">'</span></span>
+require <span class="s"><span class="dl">'</span><span class="k">win32struct</span><span class="dl">'</span></span>
+include <span class="co">Windows</span>::<span class="co">SystemInfo</span>
+
+<span class="c"># SYSTEM_INFO in VC6 's SDK</span>
+<span class="c"># typedef struct _SYSTEM_INFO {</span>
+<span class="c">#     union {</span>
+<span class="c">#         DWORD dwOemId;          // Obsolete field...do not use</span>
+<span class="c">#         struct {</span>
+<span class="c">#             WORD wProcessorArchitecture;</span>
+<span class="c">#             WORD wReserved;</span>
+<span class="c">#         };</span>
+<span class="c">#     };</span>
+<span class="c">#     DWORD dwPageSize;</span>
+<span class="c">#     LPVOID lpMinimumApplicationAddress;</span>
+<span class="c">#     LPVOID lpMaximumApplicationAddress;</span>
+<span class="c">#     DWORD dwActiveProcessorMask;</span>
+<span class="c">#     DWORD dwNumberOfProcessors;</span>
+<span class="c">#     DWORD dwProcessorType;</span>
+<span class="c">#     DWORD dwAllocationGranularity;</span>
+<span class="c">#     WORD wProcessorLevel;</span>
+<span class="c">#     WORD wProcessorRevision;</span>
+<span class="c"># } SYSTEM_INFO, *LPSYSTEM_INFO;</span>
+
+<span class="c"># SYSTEM_INFO in Ruby</span>
+<span class="r">class</span> <span class="cl">SYSTEM_INFO</span> &lt; <span class="co">Win32Struct</span>
+    union<span class="sy">:u</span> <span class="r">do</span>
+        <span class="co">DWORD</span><span class="sy">:dwOemId</span>
+        struct<span class="sy">:x</span> <span class="r">do</span>
+            <span class="co">WORD</span><span class="sy">:wProcessorArchitecture</span>
+            <span class="co">WORD</span><span class="sy">:wReserved</span>        
+        <span class="r">end</span>
+    <span class="r">end</span>
+    <span class="co">DWORD</span>  <span class="sy">:dwPageSize</span>
+    <span class="co">LPVOID</span> <span class="sy">:lpMinimumApplicationAddress</span>
+    <span class="co">LPVOID</span> <span class="sy">:lpMaximumApplicationAddress</span>
+    <span class="co">DWORD</span>  <span class="sy">:dwActiveProcessorMask</span>
+    <span class="co">DWORD</span>  <span class="sy">:dwNumberOfProcessors</span>
+    <span class="co">DWORD</span>  <span class="sy">:dwProcessorType</span>
+    <span class="co">DWORD</span>  <span class="sy">:dwAllocationGranularity</span>
+    <span class="co">WORD</span>   <span class="sy">:wProcessorLevel</span>
+    <span class="co">WORD</span>   <span class="sy">:wProcessorRevision</span>
+<span class="r">end</span>
+
+<span class="c"># call GetSystemInfo</span>
+sys_info = <span class="co">SYSTEM_INFO</span>.new
+GetSystemInfo(sys_info.__data__) <span class="c"># __data__ is an alias for method 'data'        </span>
+        
+<span class="c">#output</span>
+puts <span class="s"><span class="dl">&quot;</span><span class="k">&lt;System Infomation&gt;</span><span class="dl">&quot;</span></span> 
+puts        <span class="s"><span class="dl">&quot;</span><span class="k">Processor Architecture:</span><span class="il"><span class="idl">#{</span>sys_info.u.x.wProcessorArchitecture<span class="idl">}</span></span><span class="dl">&quot;</span></span>        <span class="c"># 'u' and 'x' can not be omitted</span>
+puts        <span class="s"><span class="dl">&quot;</span><span class="k">Page Size:</span><span class="il"><span class="idl">#{</span>sys_info.dwPageSize<span class="idl">}</span></span><span class="dl">&quot;</span></span>
+puts        <span class="s"><span class="dl">&quot;</span><span class="k">Minimum Application Address:0x</span><span class="il"><span class="idl">#{</span>sys_info.lpMinimumApplicationAddress.to_s <span class="i">16</span><span class="idl">}</span></span><span class="dl">&quot;</span></span>
+puts        <span class="s"><span class="dl">&quot;</span><span class="k">Maximum Application Address:0x</span><span class="il"><span class="idl">#{</span>sys_info.lpMaximumApplicationAddress.to_s <span class="i">16</span><span class="idl">}</span></span><span class="dl">&quot;</span></span>
+puts        <span class="s"><span class="dl">&quot;</span><span class="k">Active Processor Mask:</span><span class="il"><span class="idl">#{</span>sys_info.dwActiveProcessorMask<span class="idl">}</span></span><span class="dl">&quot;</span></span>
+puts        <span class="s"><span class="dl">&quot;</span><span class="k">Number Of Processors:</span><span class="il"><span class="idl">#{</span>sys_info.dwNumberOfProcessors<span class="idl">}</span></span><span class="dl">&quot;</span></span>
+puts        <span class="s"><span class="dl">&quot;</span><span class="k">Processor Type:</span><span class="il"><span class="idl">#{</span>sys_info.dwProcessorType<span class="idl">}</span></span><span class="dl">&quot;</span></span>
+puts        <span class="s"><span class="dl">&quot;</span><span class="k">Allocation Granularity:0x</span><span class="il"><span class="idl">#{</span>sys_info.dwAllocationGranularity.to_s <span class="i">16</span><span class="idl">}</span></span><span class="dl">&quot;</span></span>
+puts        <span class="s"><span class="dl">&quot;</span><span class="k">Processor Level:</span><span class="il"><span class="idl">#{</span>sys_info.wProcessorLevel<span class="idl">}</span></span><span class="dl">&quot;</span></span>
+puts        <span class="s"><span class="dl">&quot;</span><span class="k">Processor Revision:</span><span class="il"><span class="idl">#{</span>sys_info.wProcessorRevision<span class="idl">}</span></span><span class="dl">&quot;</span></span>
+        
+        
+        </pre></div>
+</div>
+
+</div>
+</body>

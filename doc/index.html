@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://gmpg.org/xfn/11">
+  <meta http-equiv="Content-Type" content="text/html" charset=UTF-8 />
+  <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+	<title>CStruct:Home</title>
+	<link rel="stylesheet" href="stylesheets/style.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="stylesheets/coderay.css" type="text/css" media="screen" />
+ 	<!--[if IE]>
+		<link rel="stylesheet" href="/stylesheets/ie.css" type="text/css" media="screen" />
+  	<![endif]-->
+</head>
+
+<body >
+<div>
+<div id ="container">	
+	<div id="logo">	</div>
+
+	<div id="menu">
+		<ul class="navi">
+			<li><a href ="index.html">Home</a></li>
+			<li><a href ="documents.html">Documents</a></li>
+			<li><a href ="examples.html">Examples</a></li>
+			<li><a href ="http://rubyforge.org/projects/cstruct/" target="_blank">Download</a></li>
+		</ul>	
+	</div>
+	<div id="connent">
+		<p class ="blank_line"> </p>
+		<div>
+			<h2  class="bk_h2 bk_h2_news">News</h2> 
+			<p>CStruct 1.0.0 has released!</p>
+		</div>
+		
+		<div class ="blank_line"></div>	
+		<div>
+			<h2 class ="bk_h2 bk_h2_synopsish">Synopsis</h2>
+			<p>
+			CStruct is a  simulation of the C language's struct.Its main purpose is to manipulate binary-data conveniently. It can be used in:<br />	
+			&nbsp;&nbsp;1. Binary file IO like C.<br />
+			&nbsp;&nbsp;2. The parameter of the OS's API.(e.g. Win32)<br />
+			&nbsp;&nbsp;3. Other... <br />
+			</p> 
+		</div>	
+		
+		<div class ="blank_line"></div>
+		<div>
+			<h2  class ="bk_h2 bk_h2_start">Getting Started</h2>
+			<div>
+				<h3>Install CStruct</h3>
+				<p>
+					Install CStruct is easy.
+					<div class="CodeRay">
+					<div class="code">gem install cstruct<br/></div>
+					</div>
+				</p>
+			</div>
+			
+			<div>	
+				<h3>Using CStruct</h3>
+				<p>
+					Let's see an example,struct <b>Point</b> in C language(32-bit platform) like this:
+					<div class="CodeRay">
+					<div class="code"><span class="r">struct</span> Point<br/>
+					{<br/>
+					 <span class="pt">&nbsp;&nbsp; int</span> x;<br/>
+					 <span class="pt">&nbsp;&nbsp; int</span> y;<br/>
+					}; 
+					</div>
+					</div>
+					How to represent struct <b>Point</b> in Ruby? You can use CStruct to do it.
+						<div class="CodeRay">
+						  <div class="code"><span class="r">class</span> <span class="cl">Point</span> &lt; <span class="co">CStruct</span><br/>
+						  &nbsp;&nbsp; int32<span class="sy">:x</span><br/>
+						  &nbsp;&nbsp; int32<span class="sy">:y</span><br/> 
+						<span class="r">end</span>
+						</div>
+						</div>
+					Example:
+					<div class="CodeRay">
+					<div class="code">require <span class="s"><span class="dl">'</span><span class="k">cstruct</span><span class="dl">'</span></span><br/>
+					
+					<span class="c"># struct Point in Ruby: </span><br/>
+					<span class="r">class</span> <span class="cl">Point</span> &lt; <span class="co">CStruct</span><br/>
+					  &nbsp;&nbsp; int32<span class="sy">:x</span><br/>
+					  &nbsp;&nbsp; int32<span class="sy">:y</span> <br/>
+					<span class="r">end</span><br/>
+					<br/>
+					<span class="c"># create a Point's instance</span><br/>
+					point   = <span class="co">Point</span>.new<br/>
+					<br/>
+					<span class="c"># assign like as C language</span><br/>
+					point.x = <span class="i">10</span><br/>
+					point.y = <span class="i">20</span><br/>
+					puts <span class="s">"point.x = #{point.x},point.y = #{point.y}"</span><br/>
+					<br/>
+					</div>
+					</div>	
+				</p>
+			</div>
+			
+			<div>
+				<h3>Using Win32Struct</h3>
+				<p>
+					like this:
+					<div class="CodeRay">
+					<div class="code"><span class="r">typedef</span> <span class="r">struct</span> _OSVERSIONINFOEXA { <br/>
+					    &nbsp;&nbsp; DWORD dwOSVersionInfoSize;<br/>
+					    &nbsp;&nbsp; DWORD dwMajorVersion;<br/>
+					    &nbsp;&nbsp; DWORD dwMinorVersion;<br/>
+					    &nbsp;&nbsp; DWORD dwBuildNumber;<br/>
+					    &nbsp;&nbsp; DWORD dwPlatformId;<br/>
+					    &nbsp;&nbsp; CHAR   szCSDVersion[ <span class="i">128</span> ];<br/>
+					    &nbsp;&nbsp; WORD wServicePackMajor;<br/>
+					    &nbsp;&nbsp; WORD wReserved[<span class="i">2</span>];<br/>
+					} OSVERSIONINFOEXA;<br/>
+					</div>
+					</div>
+					in ruby:
+					<div class="CodeRay">
+					<div class="code"><span class="r">class</span> <span class="cl">OSVERSIONINFOEXA</span> &lt; <span class="co">Win32Struct</span><br/>
+					    &nbsp;&nbsp; <span class="co">DWORD</span> <span class="sy">:dwOSVersionInfoSize</span><br/>
+					    &nbsp;&nbsp; <span class="co">DWORD</span> <span class="sy">:dwMajorVersion</span><br/>
+					    &nbsp;&nbsp; <span class="co">DWORD</span> <span class="sy">:dwMinorVersion</span><br/>
+					    &nbsp;&nbsp; <span class="co">DWORD</span> <span class="sy">:dwBuildNumber</span><br/>
+					    &nbsp;&nbsp; <span class="co">DWORD</span> <span class="sy">:dwPlatformId</span><br/>
+					    &nbsp;&nbsp; <span class="co">CHAR</span>  <span class="sy">:szCSDVersion</span>,[ <span class="i">128</span> ]<br/>
+					    &nbsp;&nbsp; <span class="co">WORD</span>  <span class="sy">:wServicePackMajor</span><br/>
+					    &nbsp;&nbsp; <span class="co">WORD</span>  <span class="sy">:wServicePackMinor</span><br/>
+					    &nbsp;&nbsp; <span class="co">WORD</span>  <span class="sy">:wReserved</span>,[<span class="i">2</span>]<br/>    
+					<span class="r">end</span><br/>
+					</div>
+					</div>	
+				</p>	
+			</div>	
+		</div>
+		
+		<div class ="blank_line"></div>	
+		<div>
+			<h2 class ="bk_h2 bk_h2_learnmore">Lean More</h2>
+			Please see also <a href="documents.html">Documents</a> and  <a href="examples.html">Examples</a>.
+		</div>
+	</div>
+
+	<div id="footer" style="height:30px">
+		
+	</div>
+</div>	
+</div>	
+</body>

@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://gmpg.org/xfn/11" >
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>CStruct:Examples:Show All Processes</title>
+	<style type="text/css">
+
+	.CodeRay {
+  background-color: #232323;
+  border: 1px solid black;
+  font-family: 'Courier New', 'Terminal', monospace;
+  color: #E6E0DB;
+  padding: 3px 5px;
+  overflow: auto;
+  font-size: 12px;
+  margin: 12px 0;
+}
+.CodeRay pre {
+  margin: 0px;
+  padding: 0px;
+}
+
+.CodeRay .an { color:#E7BE69 }                      
+.CodeRay .c  { color:#BC9358; font-style: italic; } 
+.CodeRay .ch { color:#509E4F }                   
+.CodeRay .cl { color:#FFF }                         
+.CodeRay .co { color:#FFF }    
+.CodeRay .fl { color:#A4C260 }                      
+.CodeRay .fu { color:#FFC56D }            
+.CodeRay .gv { color:#D0CFFE }                    
+.CodeRay .i  { color:#A4C260 }                      
+.CodeRay .il { background:#151515 }               
+.CodeRay .iv { color:#D0CFFE }                    
+.CodeRay .pp { color:#E7BE69 }                      
+.CodeRay .r  { color:#CB7832 }                      
+.CodeRay .rx { color:#A4C260 }                      
+.CodeRay .s  { color:#A4C260 }                      
+.CodeRay .sy { color:#6C9CBD }                      
+.CodeRay .ta { color:#E7BE69 }                      
+.CodeRay .pc { color:#6C9CBD }                      
+
+	</style>
+</head>
+<body>
+<div style="margin-left:auto;margin-right:auto;width:800px;">
+<div class="CodeRay">
+  <div class="code"><pre><span class="c"># CStruct Examples</span>
+require <span class="s"><span class="dl">'</span><span class="k">windows/tool_helper</span><span class="dl">'</span></span>
+require <span class="s"><span class="dl">'</span><span class="k">win32struct</span><span class="dl">'</span></span>
+include <span class="co">Windows</span>::<span class="co">ToolHelper</span>
+
+<span class="r">module</span> <span class="cl">Windows</span>
+    <span class="co">MAX_PATH</span> = <span class="i">260</span>
+    <span class="r">module</span> <span class="cl">ToolHelper</span>        
+        <span class="r">class</span> <span class="cl">PROCESSENTRY32</span> &lt; <span class="co">Win32Struct</span>
+            <span class="co">DWORD</span>   <span class="sy">:dwSize</span>
+            <span class="co">DWORD</span>   <span class="sy">:cntUsage</span>
+            <span class="co">DWORD</span>   <span class="sy">:th32ProcessID</span> 
+            <span class="co">DWORD</span>   <span class="sy">:th32DefaultHeapID</span>
+            <span class="co">DWORD</span>   <span class="sy">:th32ModuleID</span> 
+            <span class="co">DWORD</span>   <span class="sy">:cntThreads</span>
+            <span class="co">DWORD</span>   <span class="sy">:th32ParentProcessID</span>
+            <span class="co">LONG</span>    <span class="sy">:pcPriClassBase</span>        
+            <span class="co">DWORD</span>   <span class="sy">:dwFlags</span>
+            <span class="co">CHAR</span>    <span class="sy">:szExeFile</span>,[<span class="co">MAX_PATH</span>]  
+        <span class="r">end</span>
+    <span class="r">end</span>        
+<span class="r">end</span>
+
+<span class="r">def</span> <span class="fu">show_all_processes</span>
+    proc_enrty32 = <span class="co">PROCESSENTRY32</span>.new
+    proc_enrty32.dwSize = <span class="co">PROCESSENTRY32</span>.__size__
+    snap_handle  = CreateToolhelp32Snapshot( <span class="co">TH32CS_SNAPPROCESS</span>,<span class="i">0</span>)
+    
+    <span class="r">if</span> Process32First(snap_handle,proc_enrty32.data)
+        show_process proc_enrty32        
+        <span class="r">while</span> <span class="pc">true</span>
+            <span class="r">break</span> <span class="r">if</span> !Process32Next( snap_handle,proc_enrty32.data ) 
+            show_process proc_enrty32
+        <span class="r">end</span>                
+    <span class="r">end</span>
+    
+<span class="r">end</span>
+
+<span class="r">def</span> <span class="fu">show_process</span> proc_enrty32
+    printf<span class="s"><span class="dl">&quot;</span><span class="k">%20s 0x%08X</span><span class="ch">\n</span><span class="dl">&quot;</span></span>,proc_enrty32.szExeFile.to_cstr,proc_enrty32.th32ProcessID
+<span class="r">end</span>
+
+printf<span class="s"><span class="dl">&quot;</span><span class="k">%20s %s</span><span class="ch">\n</span><span class="dl">&quot;</span></span>,<span class="s"><span class="dl">&quot;</span><span class="k">&lt;Process Name&gt;</span><span class="dl">&quot;</span></span>,<span class="s"><span class="dl">&quot;</span><span class="k">&lt;PID&gt;</span><span class="dl">&quot;</span></span>
+printf<span class="s"><span class="dl">&quot;</span><span class="k">%20s %s</span><span class="ch">\n</span><span class="dl">&quot;</span></span>,<span class="s"><span class="dl">&quot;</span><span class="k">--------------</span><span class="dl">&quot;</span></span>,<span class="s"><span class="dl">&quot;</span><span class="k">-----</span><span class="dl">&quot;</span></span>
+show_all_processes</pre></div>
+</div>
+
+</div>
+</body>

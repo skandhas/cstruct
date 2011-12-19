@@ -1,0 +1,216 @@
+
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,blockquote,p,fieldset {
+	margin:0;
+	padding:0;
+}
+
+body {
+	/*background:#BEC3C6 url(../images/bg.jpg) repeat-x;*/
+	/*color:#000;*/
+	/*font-family:Verdana,"BitStream vera Sans",Tahoma,Helvetica,Sans-serif;*/
+	font-family:"Helvetica Neue",Helvetica,Tahoma,sans-serif;
+	/* font-size:12px; */
+	/* color:#002B59;*/
+	background-color:#EFEFEF;
+}
+table {
+margin-top: 5px;
+border:2px solid #002B59;
+border-collapse:collapse;
+} 
+
+tr.def {
+padding-top: 2px;
+padding-bottom: 2px;
+}
+tr.def td{
+color:#000;	
+border: solid #A9B3CD; 
+border-width: 1px 1px 1px 1px; 
+width:200px;
+}
+tr.def th{
+color:#ffffff;	
+background-color: #002B59;
+border: solid #A9B3CD; 
+border-width: 1px 1px 1px 1px;
+width:200px;
+} 
+
+tr.code {
+	margin:0;
+	padding:0;
+}
+tr.code td{
+color:#000;	
+background-color: #232323;
+border: solid #A9B3CD; 
+border-width: 1px 1px 1px 1px; 
+width:200px;
+}
+tr.code th{
+color:#ffffff;	
+background-color: #002B59;
+border: solid #A9B3CD; 
+border-width: 1px 1px 1px 1px;
+width:200px;
+} 
+
+
+
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight:bold;
+	letter-spacing:-0.05em;
+/*	font-family:Arial;*/
+}
+
+h1 {font-size:150%;}
+h2 {font-size:130%;}
+h3 {font-size:110%;}
+h4 {font-size:100%;}
+
+
+h3{
+	padding-left: 12px;
+	background-image: url(../images/point.png);
+	background-repeat: no-repeat;
+	background-position: left center;
+}
+
+.blank_line{
+	height:5px;
+}
+.blank_line_5px{	height:5px;}
+.blank_line_4px{	height:4px;}
+.blank_line_3px{	height:3px;}
+.blank_line_2px{	height:2px;}
+.blank_line_1px{	height:1px;}
+#wrap {
+	background:url(../images/light.gif) center top no-repeat;
+	padding:20px 0;
+}
+#container {
+	margin-left: auto;
+	margin-right: auto;
+	width:800px;
+}
+
+
+#logo {
+	background:url(../images/logo.png)  center no-repeat;
+	height:150px;
+	overflow:hidden;
+}
+
+#menu
+{
+	overflow:hidden;
+	width:800px;
+	border:1px solid #486B02;
+	background-color: #8BD400;
+}
+
+#menu ul.navi  {
+	margin:0;
+	padding:0;
+	list-style: none;
+
+}
+
+#menu ul.navi li{
+	display:block;
+	float:left ;
+	width:8em;
+	background-color: #8BD400;
+}
+
+#menu ul.navi li a{
+	display:block;
+	padding:0;
+	line-height:1.8em;
+	text-decoration: none;
+	color:#002B59;
+	font-family: 'Courier New', 'Terminal', monospace;
+	font-size: 20px;
+	font-weight:bold;
+	text-align: center;
+}
+#news h2{
+	padding-left: 16px;
+	background-image: url(../images/news.png);
+	background-repeat: no-repeat;
+	background-position: left center;	
+}
+
+.bk_h2{
+	padding-left: 20px;
+	background-repeat: no-repeat;
+	background-position: left center;
+}
+
+.bk_h2_news{ background-image: url(../images/news.png); }
+.bk_h2_synopsish{ background-image: url(../images/synopsish.png); }
+.bk_h2_start{ background-image: url(../images/start.png); }
+.bk_h2_learnmore{ background-image: url(../images/learnmore.png); }
+.bk_h2_examples{ background-image: url(../images/examples.png); }
+
+#example_menu
+{
+	overflow:hidden;
+	width:800px;
+	border:1px solid #486B02;
+	background-color:#DBDBDB;
+}
+#example_menu ul.level1{
+	margin:0;
+	padding:0;
+	list-style: none;
+}
+#example_menu ul.level1 li{
+	margin-left:30px;
+	display:block;
+	padding-left: 12px;
+	background-image: url(../images/excample1.png);
+	background-repeat: no-repeat;
+	background-position: left center;
+}
+#example_menu ul.level1 a{
+	padding:0;
+	line-height:1.5em;
+	text-decoration: none;
+	color:#002B59;
+	font-family: Verdana,"BitStream vera Sans",Tahoma,Helvetica,Sans-serif;
+	font-size: 16px;
+	text-align: left;
+}
+
+#example_menu2
+{
+	overflow:hidden;
+	width:800px;
+}
+#example_menu2 ul.level1{
+	margin:0;
+	padding:0;
+	list-style: none;
+}
+#example_menu2 ul.level1 li{
+	margin-left:30px;
+	display:block;
+	padding-left: 12px;
+	background-image: url(../images/excample2.png);
+	background-repeat: no-repeat;
+	background-position: left center;
+}
+
+#example_menu2 ul.level1 a{
+	padding:0;
+	line-height:1.5em;
+	text-decoration: none;
+	color:#002B59;
+	font-family: Verdana,"BitStream vera Sans",Tahoma,Helvetica,Sans-serif;
+	font-size: 16px;
+	text-align: left;
+}
+

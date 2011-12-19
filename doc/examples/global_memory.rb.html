@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://gmpg.org/xfn/11" >
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>CStruct:Examples:GlobalMemoryStatus</title>
+	<style type="text/css">
+
+	.CodeRay {
+  background-color: #232323;
+  border: 1px solid black;
+  font-family: 'Courier New', 'Terminal', monospace;
+  color: #E6E0DB;
+  padding: 3px 5px;
+  overflow: auto;
+  font-size: 12px;
+  margin: 12px 0;
+}
+.CodeRay pre {
+  margin: 0px;
+  padding: 0px;
+}
+
+.CodeRay .an { color:#E7BE69 }                      
+.CodeRay .c  { color:#BC9358; font-style: italic; } 
+.CodeRay .ch { color:#509E4F }                   
+.CodeRay .cl { color:#FFF }                         
+.CodeRay .co { color:#FFF }    
+.CodeRay .fl { color:#A4C260 }                      
+.CodeRay .fu { color:#FFC56D }            
+.CodeRay .gv { color:#D0CFFE }                    
+.CodeRay .i  { color:#A4C260 }                      
+.CodeRay .il { background:#151515 }               
+.CodeRay .iv { color:#D0CFFE }                    
+.CodeRay .pp { color:#E7BE69 }                      
+.CodeRay .r  { color:#CB7832 }                      
+.CodeRay .rx { color:#A4C260 }                      
+.CodeRay .s  { color:#A4C260 }                      
+.CodeRay .sy { color:#6C9CBD }                      
+.CodeRay .ta { color:#E7BE69 }                      
+.CodeRay .pc { color:#6C9CBD }                      
+
+	</style>
+</head>
+<body>
+<div style="margin-left:auto;margin-right:auto;width:800px;">
+<div class="CodeRay">
+  <div class="code"><pre><span class="c"># CStruct Examples</span>
+require <span class="s"><span class="dl">'</span><span class="k">windows/memory</span><span class="dl">'</span></span>
+require <span class="s"><span class="dl">'</span><span class="k">win32struct</span><span class="dl">'</span></span>
+
+include <span class="co">Windows</span>::<span class="co">Memory</span>
+
+<span class="c"># example:</span>
+
+<span class="c"># typedef struct _MEMORYSTATUS {</span>
+<span class="c">#     DWORD dwLength;</span>
+<span class="c">#     DWORD dwMemoryLoad;</span>
+<span class="c">#     DWORD dwTotalPhys;</span>
+<span class="c">#     DWORD dwAvailPhys;</span>
+<span class="c">#     DWORD dwTotalPageFile;</span>
+<span class="c">#     DWORD dwAvailPageFile;</span>
+<span class="c">#     DWORD dwTotalVirtual;</span>
+<span class="c">#     DWORD dwAvailVirtual;</span>
+<span class="c"># } MEMORYSTATUS, *LPMEMORYSTATUS;</span>
+
+<span class="r">class</span> <span class="cl">MEMORYSTATUS</span> &lt; <span class="co">Win32Struct</span>
+    <span class="co">DWORD</span> <span class="sy">:dwLength</span>
+    <span class="co">DWORD</span> <span class="sy">:dwMemoryLoad</span>
+    <span class="co">DWORD</span> <span class="sy">:dwTotalPhys</span>
+    <span class="co">DWORD</span> <span class="sy">:dwAvailPhys</span>
+    <span class="co">DWORD</span> <span class="sy">:dwTotalPageFile</span>
+    <span class="co">DWORD</span> <span class="sy">:dwAvailPageFile</span>
+    <span class="co">DWORD</span> <span class="sy">:dwTotalVirtual</span>
+    <span class="co">DWORD</span> <span class="sy">:dwAvailVirtual</span>        
+<span class="r">end</span>
+
+
+
+<span class="c"># create a MEMORYSTATUS's instance</span>
+stat = <span class="co">MEMORYSTATUS</span>.new {|st| st.dwLength = <span class="co">MEMORYSTATUS</span>.size }
+
+<span class="c"># call API &quot;GlobalMemoryStatus&quot; - See also MSDN</span>
+GlobalMemoryStatus(stat.data)
+
+<span class="c">#output</span>
+printf <span class="s"><span class="dl">&quot;</span><span class="k">[Physical Memory]</span><span class="ch">\n</span><span class="dl">&quot;</span></span>
+printf <span class="s"><span class="dl">&quot;</span><span class="k">  total:%12d bytes</span><span class="ch">\n</span><span class="dl">&quot;</span></span>,stat.dwTotalPhys
+printf <span class="s"><span class="dl">&quot;</span><span class="k">  free :%12d bytes</span><span class="ch">\n</span><span class="dl">&quot;</span></span>,stat.dwAvailPhys
+
+printf <span class="s"><span class="dl">&quot;</span><span class="k">[Virtual Memory]</span><span class="ch">\n</span><span class="dl">&quot;</span></span>
+printf <span class="s"><span class="dl">&quot;</span><span class="k">  total:%12d bytes</span><span class="ch">\n</span><span class="dl">&quot;</span></span>,stat.dwTotalVirtual
+printf <span class="s"><span class="dl">&quot;</span><span class="k">  free :%12d bytes</span><span class="ch">\n</span><span class="dl">&quot;</span></span>,stat.dwAvailVirtual
+
+printf <span class="s"><span class="dl">&quot;</span><span class="k">[Paging File]</span><span class="ch">\n</span><span class="dl">&quot;</span></span>
+printf <span class="s"><span class="dl">&quot;</span><span class="k">  total:%12d bytes</span><span class="ch">\n</span><span class="dl">&quot;</span></span>,stat.dwTotalPageFile
+printf <span class="s"><span class="dl">&quot;</span><span class="k">  free :%12d bytes</span><span class="ch">\n</span><span class="dl">&quot;</span></span>,stat.dwAvailPageFile
+
+</pre></div>
+</div>
+
+</div>
+</body>

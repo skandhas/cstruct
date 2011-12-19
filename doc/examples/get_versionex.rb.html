@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://gmpg.org/xfn/11" >
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>CStruct:Examples:GetVersionExA</title>
+	<style type="text/css">
+
+	.CodeRay {
+  background-color: #232323;
+  border: 1px solid black;
+  font-family: 'Courier New', 'Terminal', monospace;
+  color: #E6E0DB;
+  padding: 3px 5px;
+  overflow: auto;
+  font-size: 12px;
+  margin: 12px 0;
+}
+.CodeRay pre {
+  margin: 0px;
+  padding: 0px;
+}
+
+.CodeRay .an { color:#E7BE69 }                      
+.CodeRay .c  { color:#BC9358; font-style: italic; } 
+.CodeRay .ch { color:#509E4F }                   
+.CodeRay .cl { color:#FFF }                         
+.CodeRay .co { color:#FFF }    
+.CodeRay .fl { color:#A4C260 }                      
+.CodeRay .fu { color:#FFC56D }            
+.CodeRay .gv { color:#D0CFFE }                    
+.CodeRay .i  { color:#A4C260 }                      
+.CodeRay .il { background:#151515 }               
+.CodeRay .iv { color:#D0CFFE }                    
+.CodeRay .pp { color:#E7BE69 }                      
+.CodeRay .r  { color:#CB7832 }                      
+.CodeRay .rx { color:#A4C260 }                      
+.CodeRay .s  { color:#A4C260 }                      
+.CodeRay .sy { color:#6C9CBD }                      
+.CodeRay .ta { color:#E7BE69 }                      
+.CodeRay .pc { color:#6C9CBD }                      
+
+	</style>
+</head>
+<body>
+<div style="margin-left:auto;margin-right:auto;width:800px;">
+<div class="CodeRay">
+  <div class="code"><pre><span class="c"># CStruct Examples</span>
+require <span class="s"><span class="dl">'</span><span class="k">windows/system_info</span><span class="dl">'</span></span>
+require <span class="s"><span class="dl">'</span><span class="k">win32struct</span><span class="dl">'</span></span>
+include <span class="co">Windows</span>::<span class="co">SystemInfo</span>
+
+
+<span class="c"># OSVERSIONINFOEXA in VC6 's SDK</span>
+<span class="c">#typedef struct _OSVERSIONINFOEXA {</span>
+<span class="c">#    DWORD dwOSVersionInfoSize;</span>
+<span class="c">#    DWORD dwMajorVersion;</span>
+<span class="c">#    DWORD dwMinorVersion;</span>
+<span class="c">#    DWORD dwBuildNumber;</span>
+<span class="c">#    DWORD dwPlatformId;</span>
+<span class="c">#    CHAR   szCSDVersion[ 128 ];     // Maintenance string for PSS usage</span>
+<span class="c">#    WORD wServicePackMajor;</span>
+<span class="c">#    WORD wServicePackMinor;</span>
+<span class="c">#    WORD wReserved[2];</span>
+<span class="c">#} OSVERSIONINFOEXA;</span>
+
+
+<span class="r">class</span> <span class="cl">OSVERSIONINFOEXA</span> &lt; <span class="co">Win32Struct</span>
+    <span class="co">DWORD</span> <span class="sy">:dwOSVersionInfoSize</span>
+    <span class="co">DWORD</span> <span class="sy">:dwMajorVersion</span>
+    <span class="co">DWORD</span> <span class="sy">:dwMinorVersion</span>
+    <span class="co">DWORD</span> <span class="sy">:dwBuildNumber</span>
+    <span class="co">DWORD</span> <span class="sy">:dwPlatformId</span>
+    <span class="co">CHAR</span>  <span class="sy">:szCSDVersion</span>,[ <span class="i">128</span> ]
+    <span class="co">WORD</span>  <span class="sy">:wServicePackMajor</span>
+    <span class="co">WORD</span>  <span class="sy">:wServicePackMinor</span>
+    <span class="co">WORD</span>  <span class="sy">:wReserved</span>,[<span class="i">2</span>]    
+<span class="r">end</span>
+
+ver_info_ex = <span class="co">OSVERSIONINFOEXA</span>.new <span class="r">do</span> |st| 
+        st.dwOSVersionInfoSize = <span class="co">OSVERSIONINFOEXA</span>.__size__  <span class="c"># __size__ is an alias for method 'size'</span>
+<span class="r">end</span>
+
+<span class="c">#ANSI Version: GetVersionExA</span>
+GetVersionExA(ver_info_ex.__data__) <span class="c"># __data__ is an alias for method 'data'</span>
+
+puts <span class="s"><span class="dl">&quot;</span><span class="k">&lt;OS Version Infomation&gt;</span><span class="dl">&quot;</span></span>
+puts <span class="s"><span class="dl">&quot;</span><span class="k">Major Version:</span><span class="il"><span class="idl">#{</span>ver_info_ex.dwMajorVersion<span class="idl">}</span></span><span class="dl">&quot;</span></span>
+puts <span class="s"><span class="dl">&quot;</span><span class="k">Minor Version:</span><span class="il"><span class="idl">#{</span>ver_info_ex.dwMinorVersion<span class="idl">}</span></span><span class="dl">&quot;</span></span>
+puts <span class="s"><span class="dl">&quot;</span><span class="k">Build Number:</span><span class="il"><span class="idl">#{</span>ver_info_ex.dwBuildNumber<span class="idl">}</span></span><span class="dl">&quot;</span></span>
+puts <span class="s"><span class="dl">&quot;</span><span class="k">Platform Id:</span><span class="il"><span class="idl">#{</span>ver_info_ex.dwPlatformId<span class="idl">}</span></span><span class="dl">&quot;</span></span>
+puts <span class="s"><span class="dl">&quot;</span><span class="k">CSD Version:</span><span class="il"><span class="idl">#{</span>ver_info_ex.szCSDVersion.to_cstr<span class="idl">}</span></span><span class="dl">&quot;</span></span>                 <span class="c"># to_cstr return a string(C Style)</span>
+puts <span class="s"><span class="dl">&quot;</span><span class="k">ServicePack Major:</span><span class="il"><span class="idl">#{</span>ver_info_ex.wServicePackMajor<span class="idl">}</span></span><span class="dl">&quot;</span></span>
+puts <span class="s"><span class="dl">&quot;</span><span class="k">ServicePack Minor:</span><span class="il"><span class="idl">#{</span>ver_info_ex.wServicePackMinor<span class="idl">}</span></span><span class="dl">&quot;</span></span></pre></div>
+</div>
+
+</div>
+</body>

@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://gmpg.org/xfn/11" >
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>CStruct:Examples:Array member</title>
+	<style type="text/css">
+
+	.CodeRay {
+  background-color: #232323;
+  border: 1px solid black;
+  font-family: 'Courier New', 'Terminal', monospace;
+  color: #E6E0DB;
+  padding: 3px 5px;
+  overflow: auto;
+  font-size: 12px;
+  margin: 12px 0;
+}
+.CodeRay pre {
+  margin: 0px;
+  padding: 0px;
+}
+
+.CodeRay .an { color:#E7BE69 }                      
+.CodeRay .c  { color:#BC9358; font-style: italic; } 
+.CodeRay .ch { color:#509E4F }                   
+.CodeRay .cl { color:#FFF }                         
+.CodeRay .co { color:#FFF }    
+.CodeRay .fl { color:#A4C260 }                      
+.CodeRay .fu { color:#FFC56D }            
+.CodeRay .gv { color:#D0CFFE }                    
+.CodeRay .i  { color:#A4C260 }                      
+.CodeRay .il { background:#151515 }               
+.CodeRay .iv { color:#D0CFFE }                    
+.CodeRay .pp { color:#E7BE69 }                      
+.CodeRay .r  { color:#CB7832 }                      
+.CodeRay .rx { color:#A4C260 }                      
+.CodeRay .s  { color:#A4C260 }                      
+.CodeRay .sy { color:#6C9CBD }                      
+.CodeRay .ta { color:#E7BE69 }                      
+.CodeRay .pc { color:#6C9CBD }                      
+
+	</style>
+</head>
+<body>
+<div style="margin-left:auto;margin-right:auto;width:800px;">
+<div class="CodeRay">
+  <div class="code"><pre><span class="c"># CStruct Examples</span>
+require <span class="s"><span class="dl">'</span><span class="k">cstruct</span><span class="dl">'</span></span>
+
+<span class="c"># example:</span>
+<span class="c"># struct T in C\C++ (32-bit platform): </span>
+<span class="c"># </span>
+<span class="c"># struct T</span>
+<span class="c"># {</span>
+<span class="c">#    int element[8];</span>
+<span class="c"># }; </span>
+
+<span class="c"># struct T in Ruby: </span>
+<span class="r">class</span> <span class="cl">T</span> &lt; <span class="co">CStruct</span>
+  int32<span class="sy">:elements</span>,[<span class="i">8</span>]
+<span class="r">end</span>
+
+<span class="c"># create a T's instance</span>
+t_array = <span class="co">T</span>.new
+
+(<span class="i">0</span>..<span class="i">7</span>).each <span class="r">do</span> |i|
+        t_array.elements[i] = i  <span class="c"># assign like as C language</span>
+<span class="r">end</span>
+
+<span class="c"># output</span>
+(<span class="i">0</span>..<span class="i">7</span>).each {|i| puts <span class="s"><span class="dl">&quot;</span><span class="k">t_array.elements[</span><span class="il"><span class="idl">#{</span>i<span class="idl">}</span></span><span class="k">] = </span><span class="il"><span class="idl">#{</span>t_array.elements[i]<span class="idl">}</span></span><span class="dl">&quot;</span></span> }
+
+
+<span class="c"># Actually,t_array.elements.class is Array. So..</span>
+t_array.elements.each {|element| puts element }</pre></div>
+</div>
+
+</div>
+</body>

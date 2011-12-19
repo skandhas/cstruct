@@ -1,0 +1,572 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://gmpg.org/xfn/11">
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>CStruct:Examples:Documents</title>
+	<link rel="stylesheet" href="stylesheets/style.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="stylesheets/coderay.css" type="text/css" media="screen" />
+</head>
+<body>
+<div id ="container">
+<div id="connent">
+	<br /> <!--  ----------new line--------------  -->		
+	<h1>CStruct Document</h1>
+	<div style="border:1px solid black;"></div>
+	
+    <br /> <!--  ----------new line--------------  -->	
+	<div id="types">
+		<h2 class ="bk_h2 bk_h2_start">Types in CStruct</h2>
+		<div>
+			<h3>Supported primitive types in CStruct</h3>
+			<div class="CodeRay">
+			<div class="code">
+				signed types:   <br /><span class="sy">char int8 int16 int32 int64 float double</span> <br/> 
+				<br />
+				unsigend types:  <br /><span class="sy">uchar uint8 uint16 uint32 uint64</span> 
+			</div>
+			</div>
+		</div>	
+		<div>
+			<h3>C types to CStruct types(32-bit platform)</h3>
+			<table border="1" >
+				<tr class="def"> 
+					<th>C types</th>
+					<th>CStruct types</th>
+				</tr>
+				<tr class="def">
+					<td>char</td>
+					<td>char <b>|</b> int8</td>					
+				</tr>
+				<tr class="def">
+					<td>short </td>
+					<td>int16 </td>					
+				</tr>
+				<tr  class="def">
+					<td>int </td>
+					<td>int32 </td>					
+				</tr>
+				<tr  class="def">
+					<td>long </td>
+					<td>int32 </td>					
+				</tr>
+				<tr  class="def">
+					<td>unsigned char</td>
+					<td>uchar <b>|</b> uint8</td>					
+				</tr>
+				<tr class="def">
+					<td>unsigned short</td>
+					<td>uint16 </td>					
+				</tr>		
+				<tr class="def">
+					<td>unsigned int</td>
+					<td>uint32 </td>					
+				</tr>
+				<tr class="def">
+					<td>unsigned long</td>
+					<td>uint32 </td>					
+				</tr>
+				<tr class="def">
+					<td>float</td>
+					<td>float </td>					
+				</tr>
+				<tr class="def">
+					<td>double</td>
+					<td>double</td>					
+				</tr>		
+																										
+				</table>
+		</div>
+	</div>
+    <br /> <!--  ----------new line--------------  -->	
+	<div>
+		<h2 class ="bk_h2 bk_h2_start">Options in CStruct</h2>
+		<div class="CodeRay">
+		<div class="code">
+			<span class="sy">:endian</span>
+		</div>
+		</div>	
+		
+		Yon can use <b>options</b> method to set the options of a sturct.
+		<div class="CodeRay">
+		  <div class="code"><span class="r">class</span> <span class="cl">Point</span> &lt; <span class="co">CStruct</span><br/> 
+		  &nbsp;&nbsp; options <span class="sy">:endian</span>=&gt;<span class="sy">:little</span> <span class="c"># or :big</span><br/> 
+		  &nbsp;&nbsp; int32<span class="sy">:x</span><br/> 
+		  &nbsp;&nbsp; int32<span class="sy">:y</span> <br/> 
+		<span class="r">end</span>
+		</div>
+		</div>
+		The <b>:endian</b>'s default value is <b>:little</b>.Therefore the <b>Point</b> is can defined like this: 
+		<div class="CodeRay">
+		  <div class="code"><span class="r">class</span> <span class="cl">Point</span> &lt; <span class="co">CStruct</span><br/> 
+		  &nbsp;&nbsp; int32<span class="sy">:x</span><br/> 
+		  &nbsp;&nbsp; int32<span class="sy">:y</span> <br/> 
+		<span class="r">end</span>
+		</div>
+		</div>
+			
+	</div>
+	<br /> <!--  ----------new line--------------  -->	
+	<div>
+		<h2 class ="bk_h2 bk_h2_start">Methods in CStruct</h2>
+		<b>CStruct</b> provides several  methods to get some infomation for a struct. 
+		<div>
+			<h3>::size</h3>
+		    Return a struct's size. It has an alias:__size__.
+		</div>
+		<div>
+			<h3>::endian</h3>	
+			Return a struct's endian.
+		</div>
+		
+		<div>
+			<h3>#data</h3>
+			Return a instance's data buffer. It has an alias:__data__.	
+		</div>
+		<div>
+			<h3>#reset</h3>	
+			Reset a instance's data buffer. It has an alias:__reset__.	
+		</div>
+		<div>
+			<h3>#&lt;&lt;</h3>
+			Assign to struct's instance.
+		</div>
+		<div>
+			<h3>#to_cstr</h3>
+			If a member of the struct is char buffer(i.e. It's a C sytle string),it has <b>to_cstr</b> method that return a ruby string. 	<br />
+			And,the member can be assigned by a ruby string.<br />		
+		</div>
+		    <br /> <!--  ----------new line--------------  -->	
+		    <b>See Examples:<a href="./examples/file_io.rb.html" target="_blank">File IO</a> for more information.</b>	
+			<br />Sample Example:
+			<div class="CodeRay">
+			  <div class="code">p <span class="co">Point</span>.size        <span class="c"># 8</span> <br/> 
+			p <span class="co">Point</span>.endian      <span class="c"># :little</span> <br/> <br/>  
+			
+			point = <span class="co">Point</span>.new <br/> 
+			point.x = <span class="i">1</span> <br/> 
+			point.y = <span class="i">2</span> <br/> <br/> 
+			
+			p point.__data__    <span class="c"># &quot;\x01\x00\x00\x00\x02\x00\x00\x00&quot;</span> <br/> 
+			point.__reset__      <br/> 
+			p point.__data__    <span class="c"># &quot;\x00\x00\x00\x00\x00\x00\x00\x00&quot;</span> <br/> 
+			</div>
+			</div>
+			
+	</div>
+	<br /> <!--  ----------new line--------------  -->	
+	<div id="mapping">
+		<h2 class ="bk_h2 bk_h2_start">Map C/C++ struct to Ruby</h2>
+		<div>
+			<h3>Sample struct</h3>
+			<div>	    	
+		    	<table border="1" >
+			    	<tr class="def"> 
+						<th>C/C++ </th>
+						<th>Ruby</th>
+					</tr>
+					<tr class="code" >
+						<td>
+							<div class="CodeRay" style="border:0px;">
+								<div class="code"><span class="r">struct</span> Point {  <br/>
+								    &nbsp;&nbsp; <span class="pt">int</span> x; <br/>
+								    &nbsp;&nbsp; <span class="pt">int</span> y;<br/>
+								}; <br/>
+								</div>
+								</div>
+						</td>
+						<td>
+							<div class="CodeRay"  style="border:0px;">
+							<div class="code"><span class="r">class</span> <span class="cl">Point</span> &lt; <span class="co">CStruct</span><br/>
+							    &nbsp;&nbsp; int32<span class="sy">:x</span><br/>
+							    &nbsp;&nbsp; int32<span class="sy">:y</span> <br/>
+							<span class="r">end</span> <br/>
+							</div>
+							</div>
+						</td>					
+					</tr>
+		    	</table>
+   			</div>	
+		</div>
+		<br /> <!--  ----------new line--------------  -->
+		<div>
+			<h3>Array member</h3>
+			<div>	    	
+		    	<table border="1" >
+			    	<tr class="def"> 
+						<th>C/C++ </th>
+						<th>Ruby</th>
+					</tr>
+					<tr class="code" >
+						<td>
+							<div class="CodeRay" style="border:0px;">
+							<div class="code"><span class="r">struct</span> T {<br/>
+							  &nbsp;&nbsp; <span class="pt">int</span> element[<span class="i">8</span>]; <br/>
+							};  <br/>
+							</div>	
+							</div>
+						</td>
+						<td>
+							<div class="CodeRay"  style="border:0px;">
+						    <div class="code"><span class="r">class</span> <span class="cl">T</span> &lt; <span class="co">CStruct</span> <br/>
+							&nbsp;&nbsp; int32<span class="sy">:elements</span>,[<span class="i">8</span>] <br/>
+							<span class="r">end</span>  <br/>
+							</div>
+							</div>
+						</td>					
+					</tr>
+		    	</table>
+   			</div>		
+		</div>
+		<br /> <!--  ----------new line--------------  -->
+		<div>
+			<h3>Struct member</h3>
+			<div>	    	
+		    	<table border="1" >
+			    	<tr class="def"> 
+						<th>C/C++ </th>
+						<th>Ruby</th>
+					</tr>
+					<tr class="code" >
+						<td>
+							<div class="CodeRay" style="border:0px;">
+							 <div class="code"><span class="r">struct</span> Point {<br/>
+							   &nbsp;&nbsp;  <span class="pt">int</span> x;<br/>
+							   &nbsp;&nbsp;  <span class="pt">int</span> y;<br/>
+							}; <br/>
+							<br/>
+							<span class="r">struct</span> Line {<br/>
+							    &nbsp;&nbsp; Point begin_point;<br/>
+							    &nbsp;&nbsp; Point end_point;<br/>
+							}; <br/>
+							</div>		
+							</div>
+						</td>
+						<td>
+							<div class="CodeRay"  style="border:0px;">
+							<div class="code"><span class="r">class</span> <span class="cl">Point</span> &lt; <span class="co">CStruct</span><br/>
+							  &nbsp;&nbsp; int32<span class="sy">:x</span><br/>
+							  &nbsp;&nbsp; int32<span class="sy">:y</span> <br/>
+							<span class="r">end</span><br/>
+							<br/>
+							<span class="r">class</span> <span class="cl">Line</span> &lt; <span class="co">CStruct</span><br/>
+							  &nbsp;&nbsp; <span class="co">Point</span><span class="sy">:begin_point</span><br/>
+							  &nbsp;&nbsp; <span class="co">Point</span><span class="sy">:end_point</span> <br/>
+							<span class="r">end</span><br/>
+							</div>						   
+							</div>
+						</td>					
+					</tr>
+		    	</table>
+   			</div>						
+		</div>
+		<br /> <!--  ----------new line--------------  -->
+		<div>
+			<h3>Inner struct</h3>
+			<div>	    	
+		    	<table border="1" >
+			    	<tr class="def"> 
+						<th>C/C++ </th>
+						<th>Ruby</th>
+					</tr>
+					<tr class="code" >
+						<td>
+							<div class="CodeRay" style="border:0px;">
+							 <div class="code"><span class="r">struct</span> A {<br/>
+							    &nbsp;&nbsp; <span class="r">struct</span> Inner {<br/>
+							    &nbsp;&nbsp;&nbsp;&nbsp;    <span class="pt">int</span> v1; <br/>
+							    &nbsp;&nbsp;&nbsp;&nbsp;    <span class="pt">int</span> v2;<br/>
+							    &nbsp;&nbsp; };<br/>
+							    &nbsp;&nbsp; Inner inner;<br/>
+							};<br/>
+							</div>
+							</div>
+						</td>
+						<td>
+							<div class="CodeRay"  style="border:0px;">
+							<div class="code"><span class="r">class</span> <span class="cl">A</span> &lt; <span class="co">CStruct</span><br/>
+							&nbsp;&nbsp; <span class="r">class</span> <span class="cl">Inner</span> &lt; <span class="co">CStruct</span><br/>
+							&nbsp;&nbsp;&nbsp;&nbsp; int32 <span class="sy">:v1</span><br/>
+							&nbsp;&nbsp;&nbsp;&nbsp; int32 <span class="sy">:v2</span><br/>
+							&nbsp;&nbsp;     <span class="r">end</span><br/>
+							&nbsp;&nbsp;     <span class="co">Inner</span> <span class="sy">:inner</span><br/>
+							<span class="r">end</span><br/>
+							</div>
+							</div>
+						</td>					
+					</tr>
+		    	</table>
+   			</div>						
+		</div>
+		<br /> <!--  ----------new line--------------  -->
+		<div>
+			<h3>Inner union</h3>
+			Named union is unsupported in CStruct. <br />
+			Fortunately, anonymous union can take the place of it.See also: <b>Anonymous union</b>.
+			<div>	    	
+		    	<table border="1" >
+			    	<tr class="def"> 
+						<th>C/C++ </th>
+						<th>Ruby</th>
+					</tr>
+					<tr class="code" >
+						<td>
+							<div class="CodeRay" style="border:0px;">
+							<div class="code"><span class="r">struct</span> U { <br />
+							&nbsp;&nbsp;    <span class="r">union</span> NumericType {<br />
+							&nbsp;&nbsp;&nbsp;&nbsp;        int   x;<br />
+							&nbsp;&nbsp;&nbsp;&nbsp;        int   y; <br /> 
+							&nbsp;&nbsp;    };<br />
+							&nbsp;&nbsp;    NumericType value;<br />
+							};<br />
+							</div>
+							</div>
+						</td>
+						<td>
+							<div class="CodeRay"  style="border:0px;">
+							<div class="code"><span class="r">class</span> <span class="cl">U</span> &lt; <span class="co">CStruct</span><br/>
+							&nbsp;&nbsp;    union<span class="sy">:value</span> <span class="r">do</span><br/>
+							&nbsp;&nbsp;&nbsp;&nbsp;        int32<span class="sy">:x</span><br/>
+							&nbsp;&nbsp;&nbsp;&nbsp;        int32<span class="sy">:y</span><br/>
+							&nbsp;&nbsp; <span class="r">end</span><br/>
+							<span class="r">end</span><br/>
+							</div>
+							</div>
+						</td>					
+					</tr>
+		    	</table>
+   			</div>						
+		</div>	
+		<br /> <!--  ----------new line--------------  -->		
+		<div>
+			<h3>Anonymous Struct</h3>
+			<div>	    	
+		    	<table border="1" >
+			    	<tr class="def"> 
+						<th>C/C++ </th>
+						<th>Ruby</th>
+					</tr>
+					<tr class="code" >
+						<td>
+							<div class="CodeRay" style="border:0px;">
+							<div class="code"><span class="r">struct</span> Window { <br/>
+							&nbsp;&nbsp;   <span class="pt">int</span> style;<br/>
+							&nbsp;&nbsp;   <span class="r">struct</span>{   <br/>
+							&nbsp;&nbsp;&nbsp;&nbsp;     <span class="pt">int</span> x; <br/> 
+							&nbsp;&nbsp;&nbsp;&nbsp;     <span class="pt">int</span> y; <br/>
+							&nbsp;&nbsp;   }position;<br/>
+							}; <br/>
+							</div>
+							</div>
+						</td>
+						<td>
+							<div class="CodeRay"  style="border:0px;">
+							<div class="code"><span class="r">class</span> <span class="cl">Window</span> &lt; <span class="co">CStruct</span><br/>
+							&nbsp;&nbsp;    int32<span class="sy">:style</span><br/>
+							&nbsp;&nbsp;    struct <span class="sy">:position</span> <span class="r">do</span><br/>
+							&nbsp;&nbsp;&nbsp;&nbsp;        int32<span class="sy">:x</span><br/>
+							&nbsp;&nbsp;&nbsp;&nbsp;       int32<span class="sy">:y</span> <br/>       
+							&nbsp;&nbsp;   <span class="r">end</span><br/>
+							<span class="r">end</span><br/>
+							</div>
+							</div>
+						</td>					
+					</tr>
+		    	</table>
+   			</div>						
+		</div>	
+		<br /> <!--  ----------new line--------------  -->		
+		<div>
+			<h3>Anonymous union</h3>
+			<div>	    	
+		    	<table border="1" >
+			    	<tr class="def"> 
+						<th>C/C++ </th>
+						<th>Ruby</th>
+					</tr>
+					<tr class="code" >
+						<td>
+							<div class="CodeRay" style="border:0px;">
+							<div class="code"><span class="r">struct</span> U {<br/>
+							&nbsp;&nbsp;  <span class="r">union</span>{<br/>
+							&nbsp;&nbsp;&nbsp;&nbsp;   <span class="pt">int</span> x;<br/>
+							&nbsp;&nbsp;&nbsp;&nbsp;   <span class="pt">int</span> y;<br/>
+							&nbsp;&nbsp;  } value;<br/>
+							}; <br/>
+							</div>
+							</div>
+						</td>
+						<td>
+							<div class="CodeRay"  style="border:0px;">
+							<div class="code"><span class="r">class</span> <span class="cl">U</span> &lt; <span class="co">CStruct</span><br/>
+							&nbsp;&nbsp;    union<span class="sy">:value</span> <span class="r">do</span><br/>
+							&nbsp;&nbsp;&nbsp;&nbsp;        int32<span class="sy">:x</span><br/>
+							&nbsp;&nbsp;&nbsp;&nbsp;        int32<span class="sy">:y</span><br/>
+							&nbsp;&nbsp;    <span class="r">end</span><br/>
+							<span class="r">end</span><br/>
+							</div>						   
+							</div>
+						</td>					
+					</tr>
+		    	</table>
+   			</div>						
+		</div>	
+		<br /> <!--  ----------new line--------------  -->		
+		<div>
+			<h3>Namespace</h3>	
+			<div>	    	
+		    	<table border="1" >
+			    	<tr class="def"> 
+						<th>C++ </th>
+						<th>Ruby</th>
+					</tr>
+					<tr class="code" >
+						<td>
+							<div class="CodeRay" style="border:0px;">
+							 <div class="code"><span class="r">namespace</span> NS1{<br/> 
+							    &nbsp;&nbsp;  <span class="r">struct</span> A {<br/> 
+							    &nbsp;&nbsp;&nbsp;&nbsp;          <span class="pt">int</span> handle;<br/> 
+							    &nbsp;&nbsp;  };<br/> 
+							        <br/> 
+							    &nbsp;&nbsp;  <span class="r">namespace</span> NS2 {<br/> 
+							    &nbsp;&nbsp;&nbsp;&nbsp;          <span class="r">struct</span> B {<br/> 
+							    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                  A a;<br/> 
+							    &nbsp;&nbsp;&nbsp;&nbsp;         };<br/> 
+							    &nbsp;&nbsp;  }<br/> 
+							        <br/> 
+							    &nbsp;&nbsp;  <span class="r">struct</span> C {<br/> 
+							    &nbsp;&nbsp;&nbsp;&nbsp;          A a;<br/> 
+							    &nbsp;&nbsp;&nbsp;&nbsp;          NS2::B b;<br/> 
+							    &nbsp;&nbsp;  };<br/> 
+							}<br/> 
+							</div>
+							</div>
+						</td>
+						<td>
+							<div class="CodeRay"  style="border:0px;">
+							<div class="code"><span class="r">module</span> <span class="cl">NS1</span><br/> 
+							    &nbsp;&nbsp;  <span class="r">class</span> <span class="cl">A</span> &lt; <span class="co">CStruct</span><br/>
+							    &nbsp;&nbsp;&nbsp;&nbsp;      uint32<span class="sy">:handle</span><br/>
+							    &nbsp;&nbsp; <span class="r">end</span><br/>
+							    <br/>
+							    &nbsp;&nbsp; <span class="r">module</span> <span class="cl">NS2</span><br/>
+							    &nbsp;&nbsp;&nbsp;&nbsp;      <span class="r">class</span> <span class="cl">B</span> &lt; <span class="co">CStruct</span><br/>
+							    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;           <span class="co">A</span><span class="sy">:a</span><br/>
+							    &nbsp;&nbsp;&nbsp;&nbsp;      <span class="r">end</span> <br/>
+							    &nbsp;&nbsp; <span class="r">end</span><br/>
+							    <br/>
+							    &nbsp;&nbsp; <span class="r">class</span> <span class="cl">C</span> &lt; <span class="co">CStruct</span><br/>
+							    &nbsp;&nbsp;&nbsp;&nbsp;    <span class="co">A</span>     <span class="sy">:a</span><br/>
+							    &nbsp;&nbsp;&nbsp;&nbsp;    <span class="co">NS2_B</span> <span class="sy">:b</span><br/>
+							    &nbsp;&nbsp;  <span class="r">end</span> <br/>       
+							<span class="r">end</span><br/>
+							</div>
+							</div>
+						</td>					
+					</tr>
+		    	</table>
+		    	Meaning of the 'NS2_B' is NS2::B!
+   			</div>					
+		</div>					
+	</div>
+	<br /> <!--  ----------new line--------------  -->	
+	<div>
+		<h2 class ="bk_h2 bk_h2_start">Extend CStruct</h2>
+		<div>
+			<h3>Open CStruct class</h3>
+			You can open <b>CStruct</b> class to define yourself types.<br/>
+	        e.g.
+			<div class="CodeRay">
+			  <div class="code"><span class="r">class</span> <span class="cl">CStruct</span><br/>
+			&nbsp;&nbsp;  <span class="r">class</span> &lt;&lt; <span class="cl">self</span><br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;    <span class="r">alias</span> <span class="fu">uint32_t</span> <span class="fu">uint32</span><br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;    <span class="r">alias</span> <span class="fu">uint16_t</span> <span class="fu">uint16</span><br/>
+			&nbsp;&nbsp;  <span class="r">end</span> <br/> 
+			<span class="r">end</span><br/>
+			<br/>
+			<span class="r">class</span> <span class="cl">MyStrcut</span> &lt; <span class="co">CStruct</span><br/>
+			&nbsp;&nbsp;  uint32_t<span class="sy">:value</span><br/>
+			<span class="r">end</span><br/>
+			</div>
+			</div>
+		</div>
+		<div>
+			<h3>Define a  new types struct </h3>
+			It is a good idea to define a individual struct to wrap the types.<b>Win32Struct</b> is an example of this.Please read on.
+		</div>
+		
+	</div>
+	<br /> <!--  ----------new line--------------  -->	
+	<div >
+		<h2 class ="bk_h2 bk_h2_start">Win32Struct</h2>
+		<div>
+			<h3>Win32Struct's source</h3>
+			<div class="CodeRay">
+			<div class="code"><span class="r">class</span> <span class="cl">Win32Struct</span>&lt; <span class="co">CStruct</span> <br/>       
+			&nbsp;&nbsp;<span class="r">class</span> &lt;&lt; <span class="cl">self</span> <br/>  
+			&nbsp;&nbsp;&nbsp;&nbsp; <span class="r">alias</span> <span class="fu">HANDLE</span>    <span class="fu">uint32</span><br/> 
+			&nbsp;&nbsp;&nbsp;&nbsp;    <span class="r">alias</span> <span class="fu">HMODULE</span>   <span class="fu">uint32</span><br/> 
+			&nbsp;&nbsp;&nbsp;&nbsp;    <span class="r">alias</span> <span class="fu">HINSTANCE</span> <span class="fu">uint32</span><br/>        
+			&nbsp;&nbsp;&nbsp;&nbsp;    <span class="r">alias</span> <span class="fu">HRGN</span>      <span class="fu">uint32</span><br/> 
+			&nbsp;&nbsp;&nbsp;&nbsp;    <span class="r">alias</span> <span class="fu">HTASK</span>     <span class="fu">uint32</span><br/> 
+			&nbsp;&nbsp;&nbsp;&nbsp;    <span class="r">alias</span> <span class="fu">HKEY</span>      <span class="fu">uint32</span><br/> 
+			&nbsp;&nbsp;&nbsp;&nbsp;   <span class="r">alias</span> <span class="fu">HDESK</span>     <span class="fu">uint32</span><br/> 
+			&nbsp;&nbsp;&nbsp;&nbsp;    <span class="r">alias</span> <span class="fu">HMF</span>       <span class="fu">uint32</span><br/> 
+			&nbsp;&nbsp;&nbsp;&nbsp;  <span class="r">alias</span> <span class="fu">HEMF</span>      <span class="fu">uint32</span><br/> 
+			&nbsp;&nbsp;&nbsp;&nbsp;    <span class="r">alias</span> <span class="fu">HRSRC</span>     <span class="fu">uint32</span><br/> 
+			&nbsp;&nbsp;&nbsp;&nbsp;   ......<br/> 
+			&nbsp;&nbsp;&nbsp;&nbsp;    ......<br/> 
+			 &nbsp;&nbsp;<span class="r">end</span><br/>   
+			<span class="r">end</span><br/> 
+			</div>
+			</div>
+		</div>
+		
+		<div>
+			<h3>Using Win32Struct</h3>
+			In order to use <b>Win32Struct</b>,you must require it.
+			<div class="CodeRay">
+  			<div class="code"><pre>require <span class="s"><span class="dl">'</span><span class="k">win32struct</span><span class="dl">'</span></span>
+			</pre></div>
+			</div>
+			
+			By using Win32Struct,we can easily define a struct that exist in Windows SDK.
+			<br />For example:
+			<div class="CodeRay">
+			<div class="code"><span class="r">class</span> <span class="cl">PROCESSENTRY32</span> &lt; <span class="co">Win32Struct</span><br/>  
+			&nbsp;&nbsp;  <span class="co">DWORD</span>   <span class="sy">:dwSize</span><br/>  
+			&nbsp;&nbsp;  <span class="co">DWORD</span>   <span class="sy">:cntUsage</span><br/>  
+			&nbsp;&nbsp;  <span class="co">DWORD</span>   <span class="sy">:th32ProcessID</span> <br/>  
+			&nbsp;&nbsp;  <span class="co">DWORD</span>   <span class="sy">:th32DefaultHeapID</span><br/>  
+			&nbsp;&nbsp;  <span class="co">DWORD</span>   <span class="sy">:th32ModuleID</span> <br/>  
+			&nbsp;&nbsp;  <span class="co">DWORD</span>   <span class="sy">:cntThreads</span><br/>  
+			&nbsp;&nbsp;  <span class="co">DWORD</span>   <span class="sy">:th32ParentProcessID</span><br/>  
+			&nbsp;&nbsp;  <span class="co">LONG</span>    <span class="sy">:pcPriClassBase</span>    <br/>      
+			&nbsp;&nbsp;  <span class="co">DWORD</span>   <span class="sy">:dwFlags</span><br/>  
+			&nbsp;&nbsp;  <span class="co">CHAR</span>    <span class="sy">:szExeFile</span>,[<span class="co">260</span>] <br/>   
+			<span class="r">end</span><br/>  
+			</div>
+			</div>
+			<b>See Examples:<a href="./examples/show_processes.rb.html" target="_blank">Show All Process</a>,<a href="./examples/global_memory.rb.html" target="_blank">GlobalMemoryStatus</a> for more information.</b>				
+		</div>
+	</div>
+	
+	<br /> <!--  ----------new line--------------  -->	
+	<div>
+		<h2 class ="bk_h2 bk_h2_start">CStruct and Win32Utils</h3>
+	    The <a href="http://rubyforge.org/projects/win32utils/" target="_blank">Win32Utils</a> project is  powerful and convenient! 
+	    <b>Win32Utils</b> can be used together with <b>CStruct(Win32Struct)</b>.
+	    The Win32's example of the<b>CStruct</b> that has used <b>windows-pr</b> gem.
+	    It is worth mentioning that the <b>win32-api</b> 1.4.6 gem is not available on ruby 1.9.x. You can compile it yourself use <a href="https://github.com/oneclick/rubyinstaller/wiki/Development-Kit" target="_blank">DevKit</a>. And replace the <b>win32-api-1.4.6-x86-mingw32</b>'s <b>api.so</b>.   
+	</div>	
+	
+	<br /> <!--  ----------new line--------------  -->			
+	<div style="border:1px solid black;"></div>
+	Back to <a href ="index.html"><b>Home</b></a>
+	
+	<div id="footer" style="height:30px">
+		
+	</div>
+</div>
+
+</div>
+</body>
