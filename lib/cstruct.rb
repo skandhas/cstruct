@@ -1,5 +1,5 @@
 #--
-# Copyright (c) 2010 Wang Yong
+# Copyright (c) 2010 skandhas<github.com/skandhas>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -21,46 +21,41 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-###############################################
-# CStruct
-# Author: Wang Yong (skandhas)
-# CStruct Homepage: cstruct.rubyforge.org
-# E-Mail: skandhas@163.com
-###############################################
-
 require 'enumerator'
+require_relative 'cstruct/utils'
+class CStruct  
+  VERSION = '1.0.1'
 
-class CStruct
+  class << self
+    def options opt_hash
   
-  VERSION = '1.0.0'
+    end
+    
+    def endian
+      @options[:endian] 
+    end
+  
+    def align
+      @options[:align]
+    end
+  
+    def field_hash
+      @fields
+    end
 
-public 
-  def self.options opt_hash
-  	raise 'Data Type Error!' unless opt_hash.is_a? Hash
-  	@endian = opt_hash[:endian] if opt_hash.has_key?:endian
-  	raise 'Unsupported Endian!' if @endian!=:little and @endian!=:big
-  	@align  = opt_hash[:align]  if opt_hash.has_key?:align
+    def size
+      @options[:layout_size]
+    end
   end
-  	
-  def self.endian
-    @endian  
-  end
-  
-  def self.align
-    @align 
-  end
-  
-  def self.field_hash
-  	@fields
-  end
-  
+
 private   
-
   def self.init_class_var  
-    @size   = 0
     @fields = {}
-    @endian = :little # :little or :big
-    @align  = 1 # Unsupport in this version
+    @options= {
+      :layout_size =>0,
+      :endian => :little,
+      @agign  => 1
+    }
   end  
   		
   def self.field symbol,fsize,fsign,dimension = nil
@@ -86,8 +81,8 @@ private
   def self.method_missing(method, *args)
     sclass = method_to_class_by_class self,method
     sclass = method_to_class_by_class Object,method unless sclass
-	sclass = method_to_class_by_namespace method unless sclass
-	sclass = method_to_class method unless sclass
+	  sclass = method_to_class_by_namespace method unless sclass
+	  sclass = method_to_class method unless sclass
     super unless sclass 
     is_cstruct = sclass.ancestors.select{|x| x == CStruct } 
      if  is_cstruct
@@ -99,13 +94,10 @@ private
   end
   
   def  self.method_to_class_by_class clazz,method
-    in_object_class = false
-    if RUBY_VERSION < '1.9' 
-        in_object_class = clazz.constants.include? method.to_s
-    else
-        in_object_class = clazz.constants.include? method
+    method_string_or_symbol = RUBY_VERSION < '1.9' ? (method.to_s):(method)
+    unless clazz.constants.include? method_string_or_symbol
+      return nil
     end
-    return nil unless in_object_class
     clazz.const_get method
   end
   
@@ -146,8 +138,8 @@ private
   end
   
   def self.do_field symbol,fsize,fsign
-    foffset =  @size
-    @size   += fsize
+    foffset =  @options[:layout_size]
+    @options[:layout_size]   += fsize
     @fields[symbol] = [fsize,foffset,fsign,nil]
     
     define_method(symbol)       { normal_field_to_value(symbol) }
@@ -156,8 +148,8 @@ private
   
   def self.do_arrayfield symbol,fsize,fsign,dimension 
     bytesize = fsize * dimension.inject(1){|m,i| m*=i}
-    foffset    = @size
-    @size      +=  bytesize
+    foffset    = @options[:layout_size]
+    @options[:layout_size]      +=  bytesize
     @fields[symbol] = [fsize,foffset,fsign,dimension,bytesize]
     
     define_method(symbol)       {  array_field_to_value(symbol) }
@@ -165,8 +157,8 @@ private
   end
   
   def self.do_structfield symbol,sclass,ssize
-    foffset =  @size
-    @size  +=  ssize
+    foffset =  @options[:layout_size]
+    @options[:layout_size]  +=  ssize
     @fields[symbol] = [ssize,foffset,:ignore,nil]
     
     define_method(symbol)       { struct_field_to_value(symbol,sclass)}
@@ -175,8 +167,8 @@ private
   
   def self.do_arraystructfield  symbol,sclass,ssize,dimension 
     bytesize= ssize * dimension.inject(1){|m,i| m*=i}
-    foffset    = @size
-    @size      +=  bytesize
+    foffset    = @options[:layout_size]
+    @options[:layout_size]      +=  bytesize
     @fields[symbol] = [ssize,foffset,:ignore,dimension,bytesize]
     
     define_method(symbol)       { array_struct_field_to_value(symbol,sclass) }
@@ -193,18 +185,16 @@ private
 
   public 
 
-  def self.size
-    @size
-  end
-  
-  class<<self
+  class << self
     alias_method :__size__, :size
     
     [1,2,4,8].each do |i|
+      
       define_method "unsigned_#{i}byte" do |*args| # |symbol,dimension=nil|
         symbol,dimension = args 
         unsigned symbol,i,dimension
       end
+
       define_method "signed_#{i}byte" do  |*args|  # |symbol,dimension=nil|
          symbol,dimension = args 
          signed symbol,i,dimension
@@ -215,6 +205,7 @@ private
       symbol,dimension = args
       field symbol,4,:float,dimension  
     end
+
     def double(*args) # |symbol,dimension=nil|
       symbol,dimension = args
       field symbol,8,:double,dimension
@@ -236,73 +227,6 @@ private
   # call init_class_var
   init_class_var
     
-  # module Utils
-  module Utils #:nodoc: all
-    UnpackFormat =
-    {
-      :little => { 1=>'C',2=>'v',4=>'V',8=>'Q',:float=>'e',:double=>'E'},
-      :big    => { 1=>'C',2=>'n',4=>'N',8=>'Q',:float=>'g',:double=>'G'}, #8=>'Q'? 'Q' is native endian
-    }
-    SigedMaxValue    = {  1 => 0x7F, 2 => 0x7FFF, 4 => 0x7FFFFFFF, 8 => 0x7FFFFFFFFFFFFFFF }
-    UnsigedMaxValue  = {  1 => 0xFF, 2 => 0xFFFF, 4 => 0xFFFFFFFF, 8 => 0xFFFFFFFFFFFFFFFF }
-    
-    # buffer is a String's object
-    def self.unpack buffer,struct_endian,fsize,fsign
-      value =nil
-      if fsign==:float or fsign ==:double
-        format = UnpackFormat[struct_endian][fsign]
-        value  = buffer.unpack(format)[0]
-      else  
-      format = UnpackFormat[struct_endian][fsize]
-      value  = buffer.unpack(format)[0]
-      if  fsign == :signed
-        value = unsigned_to_signed  value,fsize
-      end  
-      end      
-      value
-    end
-    
-    # buffer is a Array's object
-    def self.pack buffer,struct_endian,fsize,fsign
-      if fsign==:float or fsign ==:double
-        format = UnpackFormat[struct_endian][fsign]
-      else
-      format = UnpackFormat[struct_endian][fsize]
-      end 
-      buffer.pack format
-    end
-    
-    # dosen't use monkey patch~
-    def self.string_setbyte string ,index,value
-      if  RUBY_VERSION < "1.9"
-        string[index] = value
-      else
-        string.setbyte index,value
-      end        
-    end
-    def self.string_getbyte string ,index
-      if  RUBY_VERSION < "1.9"
-        string[index]
-      else
-        string.getbyte index
-      end  
-    end
-    
-    def self.unsigned_to_signed value,value_size
-      if value>SigedMaxValue[value_size] 
-        ret = value - UnsigedMaxValue[value_size]-1
-      else
-        ret = value
-      end
-      
-    end
-    def self.buffer_setbytes(target,source,targetindex)
-        source.enum_for(:each_byte).each_with_index do |byte,index|
-        string_setbyte(target,targetindex + index,byte)
-      end
-    end
-  end # module Utils
-  
 public  
   # instance methods
   attr_accessor:owner
@@ -364,6 +288,7 @@ private
   def struct_field_to_value symbol,sclass
     make_struct_field(self.class.field_hash[symbol],self.class.endian,sclass)
   end
+
   def array_struct_field_to_value symbol,sclass
     make_array_struct_field(self.class.field_hash[symbol],self.class.endian,sclass)
   end
@@ -373,7 +298,7 @@ private
     onwerref  = @owner
     self.class.class_eval do
       fsize,foffset,fsign = *@fields[symbol]
-      bin_string = CStruct::Utils::pack [value],@endian,fsize,fsign
+      bin_string = CStruct::Utils::pack [value],@options[:endian],fsize,fsign
       CStruct::Utils.buffer_setbytes dataref,bin_string,foffset
     end   
     sync_to_owner
@@ -440,13 +365,13 @@ private
     
     if  RUBY_VERSION > "1.9"
     	utf_endian = {:little=>"LE",:big=>"BE"}	
-		value.metaclass.__send__ :define_method,:to_wstr do 
+		  value.metaclass.__send__ :define_method,:to_wstr do 
 			value.pack("S#{value.index(0)}").force_encoding("UTF-16#{utf_endian[sendian]}") 	
-		end if finfo[0] == 2
+		end if finfo.first == 2
     	
 		value.metaclass.__send__ :define_method,:to_wstr do 
 			value.pack("L#{value.index(0)}").force_encoding("UTF-32#{utf_endian[sendian]}") 	
-		end if finfo[0] == 4	
+		end if finfo.first == 4	
     end
     
     value
@@ -506,7 +431,7 @@ def CStruct.union symbol,&block
 	      field_size = v[0]* dimension_product
 	      max = (field_size> max ? field_size : max)
 	    end
-	    @size = max_field_size
+	    @options[:layout_size] = max_field_size
 	  end
 	end	
     union_class.instance_eval(&block) 
