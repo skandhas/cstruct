@@ -18,11 +18,11 @@ require_relative 'predefined_struct'
 describe 'Normal Member -> Point' do
   subject do
     point = PredefinedStruct::Point.new
-    point.x,point.y = 10,20
+    point.x,point.y = -10,20
     point      
   end  
     
-  its(:x) { should == 10 }
+  its(:x) { should == -10 }
   its(:y) { should == 20 }
 end
 

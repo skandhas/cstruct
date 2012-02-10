@@ -175,12 +175,12 @@ private
     define_method("#{symbol}=") { |value| value_to_array_struct_field(symbol,sclass,value) }
   end
   
-  def self.unsigned symbol,fsize,dimension
-      field symbol,fsize,:unsigned,dimension
+  def self.unsigned(symbol,fsize,dimension)
+    field symbol,fsize,:unsigned,dimension
   end
     
-  def self.signed symbol,fsize,dimension
-      field symbol,fsize,:signed,dimension
+  def self.signed(symbol,fsize,dimension)
+    field symbol,fsize,:signed,dimension
   end
 
   public 
@@ -232,9 +232,8 @@ public
   attr_accessor:owner
   def initialize
     @data  = "\0"*self.class.size
-    @owner = []
     @data.encode!("BINARY") if RUBY_VERSION >= '1.9'
-    
+    @owner = []
     yield self if block_given?
   end
   
@@ -319,14 +318,14 @@ private
       sync_to_owner
     else 
     raise "No Implement!(CStruct,version:#{CStruct::VERSION})" 
-  end
+    end
   end
   
-  def value_to_struct_field symbol,sclass,value
+  def value_to_struct_field(symbol,sclass,value)
     raise "No Implement!(CStruct,version:#{CStruct::VERSION})" 
   end
   
-  def value_to_array_struct_field symbol,sclass,value
+  def value_to_array_struct_field(symbol,sclass,value)
     raise "No Implement!(CStruct,version:#{CStruct::VERSION})" 
   end
 
@@ -350,6 +349,7 @@ private
     dataref   = @data
     objref    = self
     value = buffer_to_values finfo,sendian
+    
     def value.metaclass  
       class<<self; self; end
     end
