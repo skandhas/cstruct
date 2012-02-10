@@ -2,15 +2,18 @@
 
 class CStruct
   class Field
+    attr_accessor:tag
     attr_accessor:size
     attr_accessor:offset
     attr_accessor:sign
     attr_accessor:dimension
 
-    def initialize(size,offset,sign)
+    def initialize(tag,size,offset,sign,dimension = nil,*arg)
+      @tag    = tag
       @size   = size 
       @offset = offset
       @sign   = sign
+      @dimension = dimension
     end
     
     def type
@@ -20,7 +23,7 @@ class CStruct
       when is_struct? then :struct
       when is_union?  then :union
       else
-        @sign 
+        :error 
       end
     end
 

@@ -22,7 +22,10 @@
 #++
 
 require 'enumerator'
+
+require_relative 'cstruct/field'
 require_relative 'cstruct/utils'
+
 class CStruct  
   VERSION = '1.0.1'
 
@@ -51,11 +54,7 @@ class CStruct
 private   
   def self.init_class_var  
     @fields = {}
-    @options= {
-      :layout_size =>0,
-      :endian => :little,
-      @agign  => 1
-    }
+    @options= { :layout_size =>0, :endian => :little, :align  => 1}
   end  
   		
   def self.field symbol,fsize,fsign,dimension = nil
@@ -140,7 +139,9 @@ private
   def self.do_field symbol,fsize,fsign
     foffset =  @options[:layout_size]
     @options[:layout_size]   += fsize
-    @fields[symbol] = [fsize,foffset,fsign,nil]
+    field = Field.new(symbol,fsize,foffset,fsign)
+    #@fields[symbol] = [fsize,foffset,fsign,nil]
+    @fields[symbol] = field
     
     define_method(symbol)       { normal_field_to_value(symbol) }
     define_method("#{symbol}=") { |value| value_to_field(symbol,value) }
@@ -296,9 +297,9 @@ private
     dataref   = @data
     onwerref  = @owner
     self.class.class_eval do
-      fsize,foffset,fsign = *@fields[symbol]
-      bin_string = CStruct::Utils::pack [value],@options[:endian],fsize,fsign
-      CStruct::Utils.buffer_setbytes dataref,bin_string,foffset
+      field = @fields[symbol]
+      bin_string = CStruct::Utils::pack [value],@options[:endian],field.size,field.sign
+      CStruct::Utils.buffer_setbytes dataref,bin_string,field.offset
     end   
     sync_to_owner
   end
@@ -329,9 +330,9 @@ private
     raise "No Implement!(CStruct,version:#{CStruct::VERSION})" 
   end
 
-  def make_normal_field  finfo,sendian,sclass = nil # finfo =[fsize,foffset,fsign,dimension,array_bytesize]
-    fsize,foffset,fsign = finfo
-    CStruct::Utils::unpack(@data[foffset,fsize],sendian,fsize,fsign)
+  def make_normal_field  field,sendian,sclass = nil # finfo =[fsize,foffset,fsign,dimension,array_bytesize]
+    CStruct::Utils::unpack(@data[field.offset,field.size],sendian,field.size,field.sign)
+    #CStruct::Utils::unpack(@data,sendian,field)
   end
   
   def make_struct_field finfo,sendian,sclass  # finfo =[fsize,foffset,fsign,dimension,array_bytesize]
