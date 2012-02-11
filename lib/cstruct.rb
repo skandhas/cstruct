@@ -20,9 +20,6 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
-
-require 'enumerator'
-
 require_relative 'cstruct/field'
 require_relative 'cstruct/utils'
 
@@ -30,8 +27,8 @@ class CStruct
   VERSION = '1.0.1'
 
   class << self
-    def options opt_hash
-  
+    def options opts
+       @options.merge! opts
     end
     
     def endian
@@ -42,7 +39,7 @@ class CStruct
       @options[:align]
     end
   
-    def field_hash
+    def fields
       @fields
     end
 
@@ -57,15 +54,16 @@ private
     @options= { :layout_size =>0, :endian => :little, :align  => 1}
   end  
   		
-  def self.field symbol,fsize,fsign,dimension = nil
+  def self.field(symbol,fsize,fsign,dimension = nil)
     if dimension.is_a? Array
       do_arrayfield  symbol,fsize,fsign,dimension
     else
-      do_field symbol,fsize,fsign
+      do_field Field.new(symbol,fsize,@options[:layout_size],fsign)
+      #do_field symbol,fsize,fsign
     end      
   end
   
-  def self.structfield  symbol,sclass,ssize,dimension = nil
+  def self.structfield(symbol,sclass,ssize,dimension = nil)
     if dimension.is_a? Array
       do_arraystructfield  symbol,sclass,ssize,dimension 
     else
@@ -73,7 +71,7 @@ private
     end      
   end  
   
-  def self.inherited clazz
+  def self.inherited(clazz)
       clazz.init_class_var
   end
     
@@ -92,7 +90,7 @@ private
      end
   end
   
-  def  self.method_to_class_by_class clazz,method
+  def  self.method_to_class_by_class(clazz,method)
     method_string_or_symbol = RUBY_VERSION < '1.9' ? (method.to_s):(method)
     unless clazz.constants.include? method_string_or_symbol
       return nil
@@ -102,7 +100,7 @@ private
   
   
   # X::Y::A
-  def self.method_to_class_by_namespace method
+  def self.method_to_class_by_namespace(method)
     sclass = nil
       class_name_array = self.to_s.split('::')
   	return nil if class_name_array.size < 2
@@ -119,7 +117,7 @@ private
     end
 
   # X_Y_A
-  def self.method_to_class  method
+  def self.method_to_class(method)
      
   	super_namespace = nil	
   	class_name_array = self.to_s.split('::')
@@ -135,41 +133,48 @@ private
   	return nil if namespace_name_array.size < 2
   	sclass = namespace_name_array.inject(super_namespace) {|m,class_name| m.const_get(class_name.to_sym) }
   end
-  
-  def self.do_field symbol,fsize,fsign
+=begin  
+  def self.do_field(symbol,fsize,fsign)
     foffset =  @options[:layout_size]
     @options[:layout_size]   += fsize
-    field = Field.new(symbol,fsize,foffset,fsign)
-    #@fields[symbol] = [fsize,foffset,fsign,nil]
-    @fields[symbol] = field
+    @fields[symbol] = Field.new(symbol,fsize,foffset,fsign)
+    
+    define_method(symbol)       { normal_field_to_value(symbol) }
+    define_method("#{symbol}=") { |value| value_to_field(symbol,value) }
+  end
+=end
+  def self.do_field(field)
+    symbol = field.tag
+    @options[:layout_size]   += field.size
+    @fields[symbol] = field #Field.new(symbol,fsize,foffset,fsign)
     
     define_method(symbol)       { normal_field_to_value(symbol) }
     define_method("#{symbol}=") { |value| value_to_field(symbol,value) }
   end
   
-  def self.do_arrayfield symbol,fsize,fsign,dimension 
-    bytesize = fsize * dimension.inject(1){|m,i| m*=i}
-    foffset    = @options[:layout_size]
-    @options[:layout_size]      +=  bytesize
-    @fields[symbol] = [fsize,foffset,fsign,dimension,bytesize]
+  def self.do_arrayfield(symbol,fsize,fsign,dimension) 
+    bytesize = fsize * dimension.inject(1){ |m,i| m*=i }
+    foffset  = @options[:layout_size]
+    @options[:layout_size] +=  bytesize
+    @fields[symbol] = Field.new(symbol,fsize,foffset,fsign,dimension) 
     
     define_method(symbol)       {  array_field_to_value(symbol) }
     define_method("#{symbol}=") { |value| value_to_arrayfield(symbol,value) }
   end
   
-  def self.do_structfield symbol,sclass,ssize
+  def self.do_structfield(symbol,sclass,ssize)
     foffset =  @options[:layout_size]
     @options[:layout_size]  +=  ssize
-    @fields[symbol] = [ssize,foffset,:ignore,nil]
+    @fields[symbol] = Field.new(symbol,ssize,foffset,:struct)
     
     define_method(symbol)       { struct_field_to_value(symbol,sclass)}
     define_method("#{symbol}=") { |value| value_to_struct_field(symbol,sclass,value)}
   end
   
-  def self.do_arraystructfield  symbol,sclass,ssize,dimension 
-    bytesize= ssize * dimension.inject(1){|m,i| m*=i}
-    foffset    = @options[:layout_size]
-    @options[:layout_size]      +=  bytesize
+  def self.do_arraystructfield(symbol,sclass,ssize,dimension) 
+    bytesize = ssize * dimension.inject(1){|m,i| m*=i}
+    foffset  = @options[:layout_size]
+    @options[:layout_size] +=  bytesize
     @fields[symbol] = [ssize,foffset,:ignore,dimension,bytesize]
     
     define_method(symbol)       { array_struct_field_to_value(symbol,sclass) }
@@ -185,31 +190,21 @@ private
   end
 
   public 
-
   class << self
     alias_method :__size__, :size
     
+    # args =[symbol,dimension=nil]
     [1,2,4,8].each do |i|
-      
-      define_method "unsigned_#{i}byte" do |*args| # |symbol,dimension=nil|
-        symbol,dimension = args 
-        unsigned symbol,i,dimension
-      end
-
-      define_method "signed_#{i}byte" do  |*args|  # |symbol,dimension=nil|
-         symbol,dimension = args 
-         signed symbol,i,dimension
-      end
+      define_method("unsigned_#{i}byte") { |*args| unsigned(args[0],i,args[1]) }
+      define_method("signed_#{i}byte")   { |*args| signed(args[0],i,args[1]) }  
     end 
     
-    def float(*args)  # |symbol,dimension=nil|
-      symbol,dimension = args
-      field symbol,4,:float,dimension  
+    def float(*args)  
+      field args[0],4,:float,args[1]  
     end
 
-    def double(*args) # |symbol,dimension=nil|
-      symbol,dimension = args
-      field symbol,8,:double,dimension
+    def double(*args) 
+      field args[0],8,:double,args[1]
     end
     
     alias uint64  unsigned_8byte
@@ -229,8 +224,8 @@ private
   init_class_var
     
 public  
-  # instance methods
   attr_accessor:owner
+  
   def initialize
     @data  = "\0"*self.class.size
     @data.encode!("BINARY") if RUBY_VERSION >= '1.9'
@@ -276,49 +271,47 @@ public
   alias __data__= data=
 
 private  
-
-  def normal_field_to_value symbol
-    make_normal_field(self.class.field_hash[symbol],self.class.endian)
+  def normal_field_to_value(symbol)
+    make_normal_field(self.class.fields[symbol],self.class.endian)
   end
   
-  def array_field_to_value symbol
-    make_array_normal_field(self.class.field_hash[symbol],self.class.endian)
+  def array_field_to_value(symbol)
+    make_array_normal_field(self.class.fields[symbol],self.class.endian)
   end
 
-  def struct_field_to_value symbol,sclass
-    make_struct_field(self.class.field_hash[symbol],self.class.endian,sclass)
+  def struct_field_to_value(symbol,sclass)
+    make_struct_field(self.class.fields[symbol],self.class.endian,sclass)
   end
 
-  def array_struct_field_to_value symbol,sclass
-    make_array_struct_field(self.class.field_hash[symbol],self.class.endian,sclass)
+  def array_struct_field_to_value(symbol,sclass)
+    make_array_struct_field(self.class.fields[symbol],self.class.endian,sclass)
   end
   
-  def value_to_field symbol,value
+  def value_to_field(symbol,value)
     dataref   = @data
     onwerref  = @owner
     self.class.class_eval do
       field = @fields[symbol]
-      bin_string = CStruct::Utils::pack [value],@options[:endian],field.size,field.sign
+      bin_string = CStruct::Utils::pack [value],@options[:endian],field.byte_size,field.sign
       CStruct::Utils.buffer_setbytes dataref,bin_string,field.offset
     end   
     sync_to_owner
   end
   
   
-  def value_to_arrayfield symbol,value
-    
-    fsize,foffset,fsign,dimension,array_bytesize = *self.class.field_hash[symbol]
-    array_length = array_bytesize/fsize
+  def value_to_arrayfield(symbol,value)  
+    field = self.class.fields[symbol]
+    array_length = field.byte_size/field.size
   
-    if (fsize==1) && (value.is_a? String)   
+    if field.size == 1 and value.is_a? String   
       if value.length >= array_length
         puts "WARNING: \"#{value}\".length(#{value.length}) >= #{symbol}.length(#{dimension})!!"
       end  
       value = value[0...array_length-1]
-      CStruct::Utils.buffer_setbytes @data,value,foffset
+      CStruct::Utils.buffer_setbytes @data,value,field.offset
       sync_to_owner
     else 
-    raise "No Implement!(CStruct,version:#{CStruct::VERSION})" 
+      raise "No Implement!(CStruct,version:#{CStruct::VERSION})" 
     end
   end
   
@@ -330,74 +323,72 @@ private
     raise "No Implement!(CStruct,version:#{CStruct::VERSION})" 
   end
 
-  def make_normal_field  field,sendian,sclass = nil # finfo =[fsize,foffset,fsign,dimension,array_bytesize]
+  def make_normal_field(field,sendian,sclass = nil) 
     CStruct::Utils::unpack(@data[field.offset,field.size],sendian,field.size,field.sign)
-    #CStruct::Utils::unpack(@data,sendian,field)
   end
   
-  def make_struct_field finfo,sendian,sclass  # finfo =[fsize,foffset,fsign,dimension,array_bytesize]
-    value     = sclass.new
-    ssize,foffset,ignore = finfo
-    value <<  @data[foffset,ssize]
-    value.owner << [@data,foffset,ssize]
+  def make_struct_field(field,sendian,sclass)
+    value = sclass.new
+    value <<  @data[field.offset,field.size]
+    value.owner << [@data,field.offset,field.size]
     if self.owner.size > 0
       value.owner += self.owner
     end
     value
   end
   
-  def make_array_normal_field finfo,sendian,sclass = nil  # finfo =[fsize,foffset,fsign,dimension,array_bytesize]
+  def make_array_normal_field(field,sendian,sclass = nil)
     dataref   = @data
     objref    = self
-    value = buffer_to_values finfo,sendian
+    value = buffer_to_values field,sendian
     
     def value.metaclass  
       class<<self; self; end
     end
     
     value.metaclass.__send__ :define_method,:[]= do |i,v|
-      fsize,foffset,fsign = finfo
-      bin_string = CStruct::Utils::pack [v],sendian,fsize,fsign
-      CStruct::Utils.buffer_setbytes dataref,bin_string,foffset + i * fsize
+      bin_string = CStruct::Utils::pack [v],sendian,field.size,field.sign
+      CStruct::Utils.buffer_setbytes dataref,bin_string,field.offset + i * field.size
       objref.sync_to_owner
     end
-    
-    value.metaclass.__send__ :define_method,:to_cstr  do value.pack("C#{value.index(0)}") end if finfo[0] == 1
-    
-    if  RUBY_VERSION > "1.9"
-    	utf_endian = {:little=>"LE",:big=>"BE"}	
-		  value.metaclass.__send__ :define_method,:to_wstr do 
-			value.pack("S#{value.index(0)}").force_encoding("UTF-16#{utf_endian[sendian]}") 	
-		end if finfo.first == 2
-    	
-		value.metaclass.__send__ :define_method,:to_wstr do 
-			value.pack("L#{value.index(0)}").force_encoding("UTF-32#{utf_endian[sendian]}") 	
-		end if finfo.first == 4	
-    end
-    
+
+    case field.size
+    when 1
+      value.metaclass.__send__(:define_method,:to_cstr){ value.pack("C#{value.index(0)}") }
+    when 2
+      if  RUBY_VERSION > "1.9"
+        utf_endian = {:little=>"LE",:big=>"BE"} 
+        value.metaclass.__send__ :define_method,:to_wstr do 
+          value.pack("S#{value.index(0)}").force_encoding("UTF-16#{utf_endian[sendian]}")
+        end   
+      end 
+    when 4
+      value.metaclass.__send__ :define_method,:to_wstr do 
+        value.pack("L#{value.index(0)}").force_encoding("UTF-32#{utf_endian[sendian]}")   
+      end     
+    end  
     value
   end
   
-  def make_array_struct_field finfo,sendian,sclass  # finfo =[fsize,foffset,fsign,dimension,array_bytesize]
-    value = buffer_to_structs finfo,sendian,sclass
+  def make_array_struct_field(field,sendian,sclass)
+    buffer_to_structs field,sendian,sclass
   end
   
-  def buffer_to_single_value fsize,foffset,iterator,sendian,fsign
+  def buffer_to_single_value(fsize,foffset,iterator,sendian,fsign)
     CStruct::Utils::unpack(@data[foffset + iterator * fsize,fsize],sendian,fsize,fsign)
   end
   
-  def buffer_to_values finfo,sendian # finfo =[fsize,foffset,fsign,dimension,array_bytesize]
-    value =[]
-    fsize,foffset,fsign,dimension,bytesize = * finfo
-    (0...bytesize/fsize).each do |i|
-        value <<  buffer_to_single_value(fsize,foffset,i,sendian,fsign)
+  def buffer_to_values(field,sendian)
+    value = []
+    (0...field.byte_size/field.size).each do |i|
+        value <<  buffer_to_single_value(field.size,field.offset,i,sendian,field.sign)
     end
     value
   end
   
-  def buffer_to_single_struct  sclass,ssize,soffset,iterator,sendian,fsign
-    value     = sclass.new
-    value <<  @data[soffset + iterator * ssize,ssize]
+  def buffer_to_single_struct(sclass,ssize,soffset,iterator,sendian,fsign)
+    value =  sclass.new
+    value << @data[soffset + iterator * ssize,ssize]
 
     value.owner << [@data,soffset + iterator * ssize,ssize]
 
@@ -407,11 +398,10 @@ private
     value
   end
   
-  def buffer_to_structs finfo,sendian,sclass  # finfo =[ssize,soffset,ssign,dimension,array_bytesize]
+  def buffer_to_structs(field,sendian,sclass)
     value =[]
-    ssize,soffset,ssign,dimension,bytesize =  finfo
-    (0...bytesize/ssize).each do |i|
-        value <<  buffer_to_single_struct(sclass,ssize,soffset,i,sendian,ssign)
+    (0...field.byte_size/field.size).each do |i|
+        value <<  buffer_to_single_struct(sclass,field.size,field.offset,i,sendian,field.sign)
       end
     value
   end
@@ -421,15 +411,15 @@ def CStruct.union symbol,&block
 	union_super  = self.ancestors[1]
 	union_class = Class.new(union_super) do
 	def self.change_to_union
-	    @fields.each do|k,v|
-	      v[1] = 0
-	      @fields[k] = v
-	    end
-	    max_field_size = @fields.values.inject(0)do |max,v| 
-	      dimension = v[3]
+	    @fields.each_key  { |symbol| @fields[symbol].offset = 0 }
+
+	    max_field_size = @fields.values.inject(0)do |max,field| 
+	      dimension = field.dimension
 	      dimension_product = 1
-	      dimension_product = dimension.inject(1){|m,d| m *= d } if dimension.is_a? Array
-	      field_size = v[0]* dimension_product
+        if dimension.is_a? Array
+	        dimension_product = dimension.inject(1){|m,d| m *= d }
+        end       
+	      field_size = field.size* dimension_product
 	      max = (field_size> max ? field_size : max)
 	    end
 	    @options[:layout_size] = max_field_size

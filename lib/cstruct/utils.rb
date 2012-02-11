@@ -1,3 +1,4 @@
+require 'enumerator'
 
 class CStruct
   module Utils #:nodoc: all

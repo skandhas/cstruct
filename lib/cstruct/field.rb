@@ -1,7 +1,7 @@
 
 
 class CStruct
-  class Field
+  class Field #:nodoc: all
     attr_accessor:tag
     attr_accessor:size
     attr_accessor:offset
@@ -16,17 +16,14 @@ class CStruct
       @dimension = dimension
     end
     
-    def type
-      case @sign
-      when is_float?  then :float
-      when is_double? then :double  
-      when is_struct? then :struct
-      when is_union?  then :union
+    def byte_size
+      if @dimension
+        @size * dimension.inject(1){|m,i| m*=i}
       else
-        :error 
-      end
+        @size
+      end  
     end
-
+    
     def is_float?
       @sign == :float
     end
@@ -36,11 +33,11 @@ class CStruct
     end
     
     def is_struct?
-    
+      @sign == :struct
     end
     
-    def is_union
-    
+    def is_union?
+      @sign == :union
     end
 
   end
