@@ -30,13 +30,6 @@ class CStruct
         buffer.pack format
       end
 
-      #def pack(buffer,struct_endian,field)
-      #  data = buffer[field.offset,field.size]
-      #  format_index = (field.is_float? or field.is_double? ) ? (field.sign):(field.size)
-      #  format = UnpackFormat[struct_endian][format_index] 
-      #  data.pack format  
-      #end
-    
       def string_setbyte(string,index,value)
         RUBY_VERSION < "1.9" ? (string[index] = value):(string.setbyte index,value)       
       end

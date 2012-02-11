@@ -62,6 +62,32 @@ describe 'Array Member -> Collection' do
   its(:elements) { should == (0..7).to_a }
 end
 
+describe 'Array Struct Member -> PointArray' do
+  it 'PointArray' do  
+    class Point < CStruct
+      double:x
+      double:y 
+    end
+
+    class PointArray < CStruct
+      Point:elements,[4]
+    end
+
+    array = PointArray.new 
+    (0..3).each do |i| 
+      array.elements[i].x = i+0.234
+      array.elements[i].y = i+1.667
+    end
+
+    (0..3).each do |i| 
+      array.elements[i].x.should == i+0.234
+      array.elements[i].y.should == i+1.667
+    end
+  end   
+  
+end
+
+
 describe 'Inner Struct Member-> T' do
   subject do
     class T < CStruct
@@ -187,6 +213,33 @@ describe 'Binary File IO ' do
   its(:'point.x') {should == 200}
 end
 =end
+describe 'Namespace ' do
+ it 'NS1 NS2' do
+    module NS1    #namespace
+        class A < CStruct
+            uint32:handle
+        end
+      
+        module NS2
+            class B < CStruct
+                A:a # directly use A
+            end 
+        end
 
+        class C < CStruct
+          A     :a
+          NS2_B :b  # Meaning of the 'NS2_B' is NS2::B
+        end 
+    end
 
+    class D < CStruct
+        NS1_NS2_B:b # Meaning of the 'NS1_NS2_B' is NS1::NS2::B
+    end 
+
+    v = D.new
+    v.b.a.handle = 120
+    v.b.a.handle.should == 120
+    
+  end
+end
 

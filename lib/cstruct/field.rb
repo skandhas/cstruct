@@ -8,20 +8,23 @@ class CStruct
     attr_accessor:sign
     attr_accessor:dimension
 
-    def initialize(tag,size,offset,sign,dimension = nil,*arg)
+    def initialize(tag,size,offset,sign,dimension = nil,*args)
       @tag    = tag
       @size   = size 
       @offset = offset
       @sign   = sign
       @dimension = dimension
+      @byte_size = size
+
+      if @dimension
+        @byte_size = @size * dimension.inject(1){|m,i| m*=i}
+        @sign = :struct_array if @sign == :struct      
+      end
+
     end
     
     def byte_size
-      if @dimension
-        @size * dimension.inject(1){|m,i| m*=i}
-      else
-        @size
-      end  
+      @byte_size
     end
     
     def is_float?
