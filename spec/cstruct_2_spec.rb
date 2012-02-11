@@ -1,7 +1,6 @@
 require 'rspec'
-require_relative '../lib/cstruct'
-
-
+require 'cstruct'
+p CStruct::VERSION
 describe 'Normal Member -> Point' do
   subject do
 
