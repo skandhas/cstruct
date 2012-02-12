@@ -15,7 +15,7 @@ require 'cstruct/utils'
 # * examples: http://cstruct.rubyforge.org/examples.html
 class CStruct
   # version  
-  VERSION = "1.0.1.pre"
+  VERSION = "1.0.1"
   class << self
     # set the options of a struct.
     def options opts

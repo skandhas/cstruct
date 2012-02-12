@@ -1,6 +1,8 @@
 require 'rspec'
 require 'cstruct'
-p CStruct::VERSION
+
+puts "Test CStruct-#{CStruct::VERSION}"
+
 describe 'Normal Member -> Point' do
   subject do
 
@@ -12,12 +14,10 @@ describe 'Normal Member -> Point' do
     point = Point.new
     point.x,point.y = -10,20
     point      
-  end  
-    
+  end      
   its(:x) { should == -10 }
   its(:y) { should == 20 }
 end
-
 
 describe 'Struct Member -> Line' do
   subject do
@@ -35,12 +35,10 @@ describe 'Struct Member -> Line' do
     line.begin_point.x = 10 
     line.begin_point.y = 20
     line      
-  end 
-     
+  end      
   its(:'begin_point.x') { should == 10 }
   its(:'begin_point.y') { should == 20 }
 end
-
 
 describe 'Array Member -> Collection' do
   subject do
@@ -57,7 +55,6 @@ describe 'Array Member -> Collection' do
 
     collection     
   end 
-
   its(:elements) { should == (0..7).to_a }
 end
 
@@ -102,7 +99,6 @@ describe 'Inner Struct Member-> T' do
     t.inner.v2 = 20
     t 
   end 
-
   its(:'inner.v1') { should == 10 }
   its(:'inner.v2') { should == 20 }
 end
