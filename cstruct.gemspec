@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name     = 'cstruct'
-  s.version  = '1.0.1.pre'
+  s.version  = '1.0.1'
   s.author   = ['skandhas']
   s.email    = 'skandhas@163.com'
   s.homepage = "http://github.com/skandhas/cstruct"
