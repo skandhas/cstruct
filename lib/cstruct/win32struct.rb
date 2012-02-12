@@ -1,4 +1,10 @@
 require "cstruct/cstruct"
+#
+# ===Description
+# Win32Struct defined some Win32 type,like as: HANDLE,HMODULE,...
+# ===How to use
+#   require 'cstruct/win32struct
+#
 class Win32Struct< CStruct  
   class << self             
     # Handle

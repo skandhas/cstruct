@@ -1,50 +1,57 @@
-#--
-# Copyright (c) 2010 skandhas<github.com/skandhas>
-#
-# Permission is hereby granted, free of charge, to any person obtaining
-# a copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to
-# the following conditions:
-#
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#++
 require 'cstruct/field'
 require 'cstruct/utils'
-
-class CStruct  
+#
+# ===Description
+# CStruct is a simulation of the C language's struct.
+# Its main purpose is to manipulate binary-data conveniently in Ruby.
+# ===Supported primitive types in CStruct
+# * signed types:
+#   char,int8,int16,int32,int64,float,double
+# * unsigned types:
+#   uchar,uint8,uint16,uint32,uint64
+# ===More infomantion
+# * source: http://github.com/skandhas/cstruct
+# * document: http://cstruct.rubyforge.org/documents.html
+# * examples: http://cstruct.rubyforge.org/examples.html
+class CStruct
+  # version  
   VERSION = "1.0.1.pre"
   class << self
+    # set the options of a struct.
     def options opts
        @options.merge! opts
     end
     
+    # Return the endian of a struct;the default is :little.
     def endian
       @options[:endian] 
     end
   
+    # Return the align of a struct;the default is 1.
     def align
       @options[:align]
     end
   
+    # Return the fields of a struct.
     def fields
       @fields
     end
-
+    # Return the size of a struct;+size+ similar to +sizeof+ in C language.
+    #
+    # Example:
+    #
+    #   class Point < CStruct
+    #     int32:x
+    #     int32:y
+    #   end
+    #
+    #   puts Point.size # or Point.__size__ 
+    #     
     def size
       @options[:layout_size]
     end
+    
+    alias_method :__size__, :size
   end
 
 private   
@@ -161,19 +168,17 @@ private
 
   public 
   class << self
-    alias_method :__size__, :size
-    
     # args =[symbol,dimension=nil]
     [1,2,4,8].each do |i|
       define_method("unsigned_#{i}byte") { |*args| unsigned(args[0],i,args[1]) }
       define_method("signed_#{i}byte")   { |*args| signed(args[0],i,args[1]) }  
     end 
     
-    def float(*args)  
+    def float(*args) #:nodoc: 
       field args[0],4,:float,args[1]  
     end
 
-    def double(*args) 
+    def double(*args) #:nodoc:
       field args[0],8,:double,args[1]
     end
     
@@ -196,27 +201,31 @@ private
 public  
   attr_accessor:owner
   
-  def initialize
+  def initialize  #:nodoc:
     @data  = "\0"*self.class.size
     @data.encode!("BINARY") if RUBY_VERSION >= '1.9'
     @owner = []
     yield self if block_given?
   end
   
+  # Return the data buffer of a CStruct's instance.
   def data
     @data
   end
   
+  # Fill the date buffer of a CStruct's instance with zero.
   def reset
     (0...self.class.size).each { |i| Utils.string_setbyte @data,i, 0 }
     sync_to_owner
   end
-  	
+
+  # Assign to CStruct's instance.	
   def data= bindata
     raise 'Data Type Error!' unless bindata.is_a? String
     self << bindata
   end
   
+  # Assign to CStruct's instance.
   def << bindata
     count = @data.size < bindata.size ? @data.size : bindata.size
     (0...count).each do |i|
@@ -224,7 +233,7 @@ public
     end
   end
     
-  def sync_to_owner
+  def sync_to_owner #:nodoc:
     return if @owner.empty?
     final_offset = @owner.inject(0) do |sum,owner_value| 
       _,foffset,_ = owner_value
@@ -373,10 +382,30 @@ private
 
 end 
 
+# Define a anonymous union field.
+#
+# Example:
+# in C:
+#   struct U
+#   {
+#      union{
+#        int x;
+#        int y;
+#      }value; /* values is anonymous union's instance */
+# };
+#
+# use CStruct in Ruby:
+#   class U < CStruct
+#     union:value do
+#       int32:x
+#       int32:y
+#     end
+#   end
+#
 def CStruct.union symbol,&block
 	union_super  = self.ancestors[1]
 	union_class = Class.new(union_super) do
-	def self.change_to_union
+	def self.change_to_union #:nodoc:
 	    @fields.each_key  { |symbol| @fields[symbol].offset = 0 }
 
 	    max_field_size = @fields.values.inject(0)do |max,field| 
@@ -394,8 +423,31 @@ def CStruct.union symbol,&block
     union_class.instance_eval(&block) 
     union_class.instance_eval{change_to_union}
     structfield symbol,union_class,union_class.size
-end
+end 
 
+# Define a anonymous struct field.
+# 
+# Example:
+#
+# in C:
+#   struct Window
+#   {
+#      int style;
+#      struct{
+#        int x;
+#        int y;
+#      }position;
+#   }; 
+# 
+# use CStruct in Ruby:
+#   class Window < CStruct
+#     int32:style
+#     struct :position do
+#       int32:x
+#       int32:y 
+#     end
+#   end
+#
 def CStruct.struct symbol,&block
   struct_super  = self.ancestors[1]
   struct_class = Class.new(struct_super) 
