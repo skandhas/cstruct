@@ -1,5 +1,5 @@
 require 'rspec'
-require_relative 'predefined_struct'
+require 'predefined_struct'
 
 #--------------------------
 # in C:

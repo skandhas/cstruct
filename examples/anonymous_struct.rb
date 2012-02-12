@@ -16,18 +16,18 @@ require 'cstruct'
 
 # struct Window in Ruby: 
 class Window < CStruct
-    int32:style
-    struct :position do
-        int32:x
-        int32:y	
-    end
+  int32:style
+  struct :position do
+    int32:x
+    int32:y 
+  end
 end
 # or like this (use brace):
 # class Window < CStruct
 #    int32:style
 #    struct (:position) {
 #        int32:x
-#        int32:y	
+#        int32:y    
 #    }
 # end
 

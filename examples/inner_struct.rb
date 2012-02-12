@@ -13,11 +13,11 @@ require 'cstruct'
 
 # struct A in Ruby:
 class A < CStruct
-    class Inner < CStruct
-        int32 :v1
-        int32 :v2
-    end
-    Inner :inner
+  class Inner < CStruct
+    int32 :v1
+    int32 :v2
+  end
+  Inner :inner
 end
 
 a = A.new

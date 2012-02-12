@@ -24,8 +24,7 @@ require 'cstruct/field'
 require 'cstruct/utils'
 
 class CStruct  
-  VERSION = '1.0.1.pre'
-
+  VERSION = "1.0.1.pre"
   class << self
     def options opts
        @options.merge! opts

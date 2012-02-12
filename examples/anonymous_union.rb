@@ -14,17 +14,17 @@ require 'cstruct'
 
 # struct U in Ruby: 
 class U < CStruct
-    union:value do
-        int32:x
-        int32:y
-    end
+  union:value do
+    int32:x
+    int32:y
+  end
 end
 
 # or like this (use brace):
 # class U < CStruct
 #    union (:position) {
 #        int32:x
-#        int32:y	
+#        int32:y    
 #    }
 # end
 

@@ -1,5 +1,3 @@
-
-
 class CStruct
   class Field #:nodoc: all
     attr_accessor:tag

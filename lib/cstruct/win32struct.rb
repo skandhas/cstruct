@@ -1,17 +1,6 @@
-###############################################
-# Win32Struct
-# - TWS(Type-Wrapper-Struct) for win32
-#
-# Author: Wang Yong (skandhas)
-# CStruct Homepage: cstruct.rubyforge.org
-# E-Mail: skandhas@163.com
-###############################################
-
-require "cstruct"
-class Win32Struct< CStruct
-	
-  class << self
-  	 		 	
+require "cstruct/cstruct"
+class Win32Struct< CStruct  
+  class << self             
     # Handle
     alias HANDLE    uint32
     alias HMODULE   uint32
@@ -26,8 +15,7 @@ class Win32Struct< CStruct
     alias HSTR      uint32
     alias HWINSTA   uint32
     alias HKL       uint32
-    alias HGDIOBJ   uint32
-    
+    alias HGDIOBJ   uint32 
     alias HICON     uint32  
     alias HPEN      uint32
     alias HACCEL    uint32

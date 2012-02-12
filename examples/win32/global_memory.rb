@@ -1,6 +1,6 @@
 # CStruct Examples
 require 'windows/memory'
-require 'win32struct'
+require 'cstruct/win32struct'
 
 include Windows::Memory
 
@@ -18,14 +18,14 @@ include Windows::Memory
 # } MEMORYSTATUS, *LPMEMORYSTATUS;
 
 class MEMORYSTATUS < Win32Struct
-    DWORD :dwLength
-    DWORD :dwMemoryLoad
-    DWORD :dwTotalPhys
-    DWORD :dwAvailPhys
-    DWORD :dwTotalPageFile
-    DWORD :dwAvailPageFile
-    DWORD :dwTotalVirtual
-    DWORD :dwAvailVirtual	
+  DWORD :dwLength
+  DWORD :dwMemoryLoad
+  DWORD :dwTotalPhys
+  DWORD :dwAvailPhys
+  DWORD :dwTotalPageFile
+  DWORD :dwAvailPageFile
+  DWORD :dwTotalVirtual
+  DWORD :dwAvailVirtual   
 end
 
 

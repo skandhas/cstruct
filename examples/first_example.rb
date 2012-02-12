@@ -2,7 +2,7 @@
 require 'cstruct'
 
 # example:
-# struct Point in C\C++	(32-bit platform): 
+# struct Point in C\C++ (32-bit platform): 
 #
 # struct Point
 # {
@@ -27,7 +27,7 @@ puts "point.x = #{point.x},point.y = #{point.y}"
 
 
 
-# struct PointF in C\C++	(32-bit platform): 
+# struct PointF in C\C++  (32-bit platform): 
 #
 # struct PointF
 # {
@@ -44,8 +44,8 @@ end
 # create a PointF's instance
 # use 'block' to initialize the fields
 point2   = PointF.new do |st|
-	st.x = 10.56
-	st.y = 20.78
+  st.x = 10.56
+  st.y = 20.78
 end
 
 puts "sizeof(PointF) = #{PointF.size}"

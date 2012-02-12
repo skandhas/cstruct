@@ -18,7 +18,7 @@ end
 t_array = T.new
 
 (0..7).each do |i|
-	t_array.elements[i] = i  # assign like as C language
+  t_array.elements[i] = i  # assign like as C language
 end
 
 # output

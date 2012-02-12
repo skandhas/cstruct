@@ -17,10 +17,10 @@ require 'cstruct'
 # Named union is unsupported in CStruct. Fortunately, anonymous union can take the place of it.
 # struct U in Ruby: 
 class U < CStruct
-    union:value do
-        int32:x
-        int32:y
-    end
+  union:value do
+    int32:x
+    int32:y
+  end
 end
 
 #  See also: 'anonymous_union.rb' 

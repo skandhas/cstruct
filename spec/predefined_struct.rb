@@ -1,4 +1,4 @@
-require_relative '../lib/cstruct'
+require 'cstruct'
 module PredefinedStruct
   # in C:
   # struct Point
