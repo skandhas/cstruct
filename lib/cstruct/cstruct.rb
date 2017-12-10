@@ -231,6 +231,7 @@ public
     (0...count).each do |i|
       Utils.string_setbyte @data,i,Utils.string_getbyte(bindata,i)
     end
+    self
   end
     
   def sync_to_owner #:nodoc:
