@@ -1,1 +1,1 @@
-require 'cstruct/cstruct'
+require_relative 'cstruct/cstruct'
